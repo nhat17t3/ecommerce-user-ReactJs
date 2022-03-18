@@ -1,5 +1,4 @@
 import { combineReducers } from "redux";
-import order from "./order";
 import cart from "./cart";
 
 import authReducer from "./auth.reducers";
@@ -19,7 +18,6 @@ import orderReducer from "./order.reducers";
 import userReducer from "./user.reducers";
 import transportReducer from "./transport.reducers";
 export default combineReducers({
-  order,
   cart,
   auth: authReducer,
   payment: paymentReducer,

@@ -2,18 +2,19 @@ import axios from "../helpers/axios";
 import { articleConstants } from "../constants/article.constants";
 import { toast } from "react-toastify";
 
-export const getListArticleByPage = (limit=10,page=0) => {
+export const getListArticleByPage = (limit=10,page=0,categoryArticleId=0) => {
   return async (dispatch) => {
     dispatch({ type: articleConstants.GET_ARTICLE_BY_PAGE_REQUEST });
-    const res = await axios.get(`/api/articles?limit=${limit}&page=${page}&sortBy=createdAt`);
+    const res = await axios.get(`/api/articles?limit=${limit}&page=${page}&categoryArticleId=${categoryArticleId}`);
 
     if (res.status === 200) {
-      const { dataResponse, message } = res.data;
+      const { dataResponse, message,count } = res.data;
       dispatch({
         type: articleConstants.GET_ARTICLE_BY_PAGE_SUCCESS,
         payload: {
           dataResponse: dataResponse,
           message: message,
+          count: count
         },
       });
 

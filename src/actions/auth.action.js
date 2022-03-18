@@ -15,7 +15,7 @@ export const login = (user) => {
     try {
       if (res.status === 201) {
         const token = res.data.dataResponse;
-        localStorage.setItem("token", token);
+        localStorage.setItem("token-user", token);
 
         dispatch({
           type: authConstants.LOGIN_SUCCESS,
@@ -25,14 +25,16 @@ export const login = (user) => {
         });
         dispatch(getInformation({ token }));
       } else {
-        if (res.status === 400) {
+        
           dispatch({
             type: authConstants.LOGIN_FAILURE,
             payload: {
-              error: "login failed",
+              error: "Sai tên đăng nhập hoặc mật khẩu",
             },
           });
-        }
+      toast.error("Sai tên đăng nhập hoặc mật khẩu")
+
+        
       }
     } catch (error) {
       dispatch({
@@ -83,7 +85,7 @@ export const logout = () => {
     //   });
     // }
 
-    localStorage.removeItem("token");
+    localStorage.removeItem("token-user");
     dispatch({ type: authConstants.LOGOUT_SUCCESS });
   };
 };
@@ -110,7 +112,7 @@ export const signup = (user) => {
         type: authConstants.REGISTER_FAILURE,
         payload: { error: res.data.message },
       });
-      toast.error("Đăng kí thất bại")
+      toast.error(`${res.data.message}`)
     }
   };
 };
@@ -179,7 +181,7 @@ export const changePassword = (pass) => {
   return async (dispatch) => {
     dispatch({ type: authConstants.CHANGE_PASSWORD_REQUEST });
 
-    const res = await axios.put(`/api/auth/password`, pass);
+    const res = await axios.post(`/api/auth/updatePassword?newPassword=${pass.newPass}&oldPassword=${pass.oldPass}`);
     // const res = await axios.put(`admin/${data.id}/change-password`, { pass });
     if (res.status === 200) {
       const { message } = res.data.message;
@@ -189,6 +191,7 @@ export const changePassword = (pass) => {
           message: message,
         },
       });
+      toast.success("cập nhật mật khẩu thành công")
     } else {
       const { message } = res.data.message;
       dispatch({
@@ -197,6 +200,7 @@ export const changePassword = (pass) => {
           error: message,
         },
       });
+      toast.error("cập nhật mật khẩu thất bại")
     }
   };
 };

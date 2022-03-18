@@ -31,7 +31,8 @@ function useQuery() {
   return React.useMemo(() => new URLSearchParams(search), [search]);
 }
 
-const Shop_Page = () => {
+const Shop_Search
+ = () => {
   // for Dispatch a fuction
   const dispatch = useDispatch();
   const alert = useAlert();
@@ -142,10 +143,8 @@ const Shop_Page = () => {
   );
 
   useEffect(() => {
-    dispatch(
-      getListProductByPage(limit, currentPage - 1, categoryId, brandId, sortBy)
-    );
-  }, [currentPage, brandId, sortBy, categoryId]);
+    dispatch(searchListProductByName(query.get("key"), limit, currentPage - 1));
+  }, [currentPage,query.get("key")]);
 
   // useEffect(() => {
   //   if (keyBrandId === 0)
@@ -366,7 +365,6 @@ const Shop_Page = () => {
                         <div className="col-lg-4 col-md-6 col-sm-6" key={index}>
                           <figure className="card card-product-grid">
                             <div className="img-wrap">
-                            {product.isHot == true ? <span className="topbar"> <span className="badge bg-danger"> Hot </span> </span> : null}
                               <img src={product.image} />
                             </div>
                             <figcaption className="info-wrap border-top">
@@ -406,7 +404,8 @@ const Shop_Page = () => {
                             </figcaption>
                           </figure>
                         </div>
-                      ); else return null;
+                      );
+                      else return null;
                     })
                   : "null"}
               </div>
@@ -458,4 +457,5 @@ const Shop_Page = () => {
   );
 };
 
-export default Shop_Page;
+export default Shop_Search
+;

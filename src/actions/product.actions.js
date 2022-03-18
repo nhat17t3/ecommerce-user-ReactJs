@@ -2,10 +2,10 @@ import axios from "../helpers/axios";
 import { productConstants } from "../constants/product.constants";
 import { toast } from "react-toastify";
 
-export const getListProductByPage = (limit=10,page=0,brandId, sortBy) => {
+export const getListProductByPage = (limit=10,page=0,categoryId = 0 ,brandId=0, sortBy="test") => {
   return async (dispatch) => {
     dispatch({ type: productConstants.GET_PRODUCT_BY_PAGE_REQUEST });
-    const res = await axios.get(`/api/products/pro?limit=${limit}&page=${page}&sortBy=${sortBy}&brandId=${brandId}`);
+    const res = await axios.get(`/api/products/pro?limit=${limit}&page=${page}&sortBy=${sortBy}&brandId=${brandId}&categoryId=${categoryId}`);
 
     if (res.status === 200) {
       const { dataResponse, message,count } = res.data;

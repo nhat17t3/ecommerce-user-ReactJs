@@ -237,7 +237,7 @@ export const updateOrder = (id,form) => {
       });
       toast.success("cập nhật đơn hàng thành công");
 
-      // dispatch(getListOrder());
+      // dispatch(getListOrderByPage(100,0));
     } else {
       const { dataResponse, message } = res.data;
 

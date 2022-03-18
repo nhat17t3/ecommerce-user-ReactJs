@@ -49,7 +49,7 @@ const Footer2 = () => {
           <form className="mb-3">
             <div className="input-group">
               <input className="form-control" type="text" placeholder="Email" />
-              <button className="btn btn-light" type="submit">
+              <button className="btn btn-light" type="button">
                 Gửi
               </button>
             </div> {/* input-group.// */}

@@ -6,17 +6,19 @@ import {
   addToCart,
   decreaseItemQuantity,
   getCart,
+  getCartByServer,
   increaseItemQuantity,
   removeItemFromCart
 } from "../../actions/cart";
 import MainFooter from "../../layouts/footer";
 import MainHeader from "../../layouts/header";
 
-const Cart_Page1 = (props) => {
+const Cart_Page = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getCart());
+    dispatch(getCartByServer())
   }, []);
 
   // const cartItem = JSON.parse(localStorage.getItem('cartItem'));
@@ -90,7 +92,7 @@ const Cart_Page1 = (props) => {
                       <article className="card card-body mb-3">
                         <div className="row gy-3 align-items-center">
                           <div className="col-md-6">
-                            <a href="#" className="itemside align-items-center">
+                            <Link to={`/product-detail/${item.id}`} href="#" className="itemside align-items-center">
                               <div className="aside">
                                 <img
                                   src={item.image}
@@ -101,9 +103,10 @@ const Cart_Page1 = (props) => {
                               </div>
                               <div className="info">
                                 <p className="title">{item.name}</p>
-                                <span className="text-muted">{item.category.name}</span>
+                                {/* <span className="text-muted">Danh mục: {item.category.name}</span>  */}
+                                <span className="text-muted">Còn: {item.instock} sản phẩm</span> 
                               </div>
-                            </a>
+                            </Link>
                           </div>
                           {/* col.// */}
                           <div className="col-auto">
@@ -136,10 +139,12 @@ const Cart_Page1 = (props) => {
                                 value={item.quantity}
                                 disabled
                               />
+                              {item.quantity >= item.instock ? null : 
+                              
                               <button
-                                className="btn btn-light"
-                                type="button"
-                                onClick={() =>
+                              className="btn btn-light"
+                              type="button"
+                              onClick={() =>
                                   increaseQty(index, item, item.quantity + 1)
                                 }
                               >
@@ -149,10 +154,11 @@ const Cart_Page1 = (props) => {
                                   height={24}
                                   fill="#999"
                                   viewBox="0 0 24 24"
-                                >
+                                  >
                                   <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
                                 </svg>
                               </button>
+                                }
                             </div>
                             {/* input-group.// */}
                           </div>
@@ -248,4 +254,4 @@ export default connect(null, {
   decreaseItemQuantity,
   removeItemFromCart,
   addToCart,
-})(Cart_Page1);
+})(Cart_Page);

@@ -1,9 +1,10 @@
 import React, { Fragment, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { filterOrderByUser, logout } from '../../actions';
+import { filterOrderByUser, logout, updateOrder } from '../../actions';
 import Main_Footer from '../../layouts/footer';
 import Main_Header from '../../layouts/header';
+import Moment from "react-moment";
 
 const Orders = () => {
   const dispatch = useDispatch();
@@ -14,6 +15,33 @@ const Orders = () => {
     dispatch(filterOrderByUser(+user.id));
   }, [user]);
   const listOrder = useSelector((state) => state.order1.listOrder);
+
+  const handleCancel = async (orderId) => {
+    const form = {
+      isCancle : true,
+      status : 4,
+      isPay : false,
+      isConfirm : false,
+      isDone : false
+    };
+    await dispatch(updateOrder(+orderId,form));
+    dispatch(filterOrderByUser(+user.id));
+  
+    // history.goBack();
+  };
+
+  const handleSucess = async (orderId) => {
+    const form = {
+      isDone : true,
+      status : 3,
+      isPay : true,
+      isCancle : false,
+      isConfirm : false
+    };
+    await dispatch(updateOrder(+orderId,form));
+    dispatch(filterOrderByUser(+user.id));
+    // history.goBack();
+  };
 
 
   return (
@@ -57,15 +85,28 @@ const Orders = () => {
               <div className="card-body">
                 <header className="d-lg-flex">
                   <div className="flex-grow-1">
-                    <h6 className="mb-0">Order ID: {element.id} 
-                      <span className="text-success"> Shipped</span>
+                    <h6 className="mb-0">Order ID: {element.id} {"  "}
+                    {element.status == 0 ? <span class="badge bg-warning">Chờ xác nhận</span> :
+        element.status == 1 ? <span class="badge bg-primary">Đã xác nhận</span> :
+        element.status == 2 ? <span class="badge bg-dark">Đang giao hàng</span> :
+        element.status == 3 ? <span class="badge bg-success">Thành công</span> :
+        <span class="badge bg-danger">Đã hủy</span>}
                     </h6>
-                    <span className="text-muted">ngày đặt: {element.createdAt}</span>
+                    <span className="text-muted">ngày đặt: <Moment format="YYYY/MM/DD HH:mm">
+                                    {element.createdAt}
+                                  </Moment></span>
                   </div>
                   <div>
-                    <a href="#" className="btn btn-sm btn-outline-danger">Hủy</a>
-                    {/* <a href="#" className="btn btn-sm btn-primary">Track order</a>  */}
+                    {element.status== 0 ?
+                    <button onClick={()=>handleCancel(element.id)}  className="btn btn-sm btn-outline-danger">Hủy</button>
+                    
+                    : null}
+                    {element.status== 2 ?
+                    <button onClick={()=>handleSucess(element.id)}  className="btn btn-sm btn-outline-primary">Đã nhận hàng</button>
+                    
+                    : null}
                   </div>
+                    {/* <a href="#" className="btn btn-sm btn-primary">Track order</a>  */}
                 </header>
                 <hr />
                 <div className="row">

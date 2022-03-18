@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 export const getListTransporter = () => {
   return async (dispatch) => {
     dispatch({ type: transporterConstants.GET_ALL_TRANSPORTER_REQUEST });
-    const res = await axios.get(`/api/transporters`);
+    const res = await axios.get(`/api/deliveries`);
 
     if (res.status === 200) {
       const { dataResponse, message } = res.data;
@@ -35,7 +35,7 @@ export const getListTransporter = () => {
 export const getTransporterById = (id) => {
   return async (dispatch) => {
     dispatch({ type: transporterConstants.GET_TRANSPORTER_BY_ID_REQUEST });
-    const res = await axios.get(`/api/transporters/${id}`);
+    const res = await axios.get(`/api/deliveries/${id}`);
 
     if (res.status === 200) {
       const { dataResponse, message } = res.data;
@@ -67,7 +67,7 @@ export const createTransporter = (form) => {
     dispatch({
       type: transporterConstants.ADD_TRANSPORTER_REQUEST,
     });
-    const res = await axios.post(`/api/transporters`, form);
+    const res = await axios.post(`/api/deliveries`, form);
 
     if (res.status === 201) {
       const { dataResponse, message } = res.data;
@@ -98,7 +98,7 @@ export const createTransporter = (form) => {
 export const deleteTransporter = (form) => {
   return async (dispatch) => {
     dispatch({ type: transporterConstants.DELETE_TRANSPORTER_REQUEST });
-    const res = await axios.delete(`/api/transporters/${form.id}`);
+    const res = await axios.delete(`/api/deliveries/${form.id}`);
     if (res.status === 200) {
       const { dataResponse, message } = res.data;
 
@@ -131,7 +131,7 @@ export const updateTransporter = (id,form) => {
   return async (dispatch) => {
     // const id = form.get("id");
     dispatch({ type: transporterConstants.UPDATE_TRANSPORTER_REQUEST });
-    const res = await axios.put(`/api/transporters/${id}`, form);
+    const res = await axios.put(`/api/deliveries/${id}`, form);
 
     if (res.status === 200) {
       const { dataResponse, message } = res.data;

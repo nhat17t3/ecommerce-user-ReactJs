@@ -1,14 +1,15 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import { toast } from "react-toastify";
 import {
   createOrder,
-  getListPayment, getListVoucherByPage
+  getListPayment, getListTransporter, getListVoucherByPage
 } from "../../actions";
 import {
   addToCart,
-  clearCartContent, getCart, removeItemFromCart
+  clearCartContent, getCart, getCartByServer, removeItemFromCart
 } from "../../actions/cart";
 import PayPal from "../../components/paypal";
 import Main_Footer from "../../layouts/footer";
@@ -17,47 +18,89 @@ import Main_Header from "../../layouts/header/";
 
 const Checkout = () => {
 
+  
+  //////////////////////////
+
+  let user = useSelector(state => state.auth.user);
   let userID = useSelector(state => state.auth.user.id);
   if(userID == null || userID == undefined) userID = 0;
   const history = useHistory();
 
-
+  
+  
   const [voucher, setVoucher] = useState('');
   const [voucherId1, setVoucherId1] = useState(0);
   const [reduceVoucher, setReduceVoucher] = useState(0);
-
-  const [nameReceiver, setNameReceiver] = useState('');
-  const [phoneReceiver, setPhoneReceiver] = useState('');
-  const [addressReceiver, setAddressReceiver] = useState('');
-  const [emailReceiver, setEmailReceiver] = useState('');
+  
+  const [nameReceiver, setNameReceiver] = useState(`${user.firstName} ${user.lastName}`);
+  const [phoneReceiver, setPhoneReceiver] = useState(user.phone);
+  const [addressReceiver, setAddressReceiver] = useState(user.address);
+  const [emailReceiver, setEmailReceiver] = useState(user.email);
   const [note, setNote] = useState('')
-  const [paymentId,setPaymentId] = useState(0)
-
+  const [paymentId,setPaymentId] = useState(0);
+  const [transporterId,setTransporterId] = useState(0);
+  
+  let checkForm = false;
+  if(nameReceiver =="" || phoneReceiver == "" || addressReceiver == "" || paymentId == 0 || transporterId ==0 )
+  checkForm=false ;
+  else checkForm = true;
   
   useEffect(() => {
     dispatch(getListVoucherByPage(100,0));
   }, []);
   const listVoucher = useSelector(state => state.voucher.listVoucher);
 
-  useEffect(() => {
-    dispatch(getListPayment());
-  }, []);
-  const listPayment = useSelector(state => state.payment.listPayment);
   
   const handleApplyVoucher= () =>{
     console.log("voucher")
     const findVoucher = listVoucher.find((q)=>q.code == voucher);
     if(findVoucher != undefined) {
-      if(findVoucher.type === "1") setReduceVoucher(findVoucher.value) ;
-      else setReduceVoucher( totalCart * findVoucher.value);
-      setVoucherId1(findVoucher.id)
+      const now = new Date();
+      const start = new Date(findVoucher.startAt);
+      const end = new Date(findVoucher.endAt);
+
+      if(start.getTime() <= now.getTime() && end.getTime() >= now.getTime() 
+      && findVoucher.quantity > 0 
+      && findVoucher.minOrderValue <= totalCart && findVoucher.isActive!=false )
+      {
+        if(findVoucher.type === "1") {
+          //  if (findVoucher.value > findVoucher.maxPrice) reduce = findVoucher.maxPrice;
+          //    else reduce= findVoucher.value;
+          setReduceVoucher(findVoucher.value) ;
+        }
+        else{
+          let k = totalCart * findVoucher.value / 100;
+        //  if (k > findVoucher.maxPrice) reduce = findVoucher.maxPrice ;
+        //  else reduce = k;
+          setReduceVoucher(k) ;
+        } 
+        setVoucherId1(findVoucher.id)
+        console.log(findVoucher);
+
+
+      }
+      else toast.warning("Mã giảm giá không khả dụng")
+
+      
+
     }
+    else toast.warning("Sai mã giảm giá")
   }
+  
+  useEffect(() => {
+    dispatch(getListPayment());
+  }, []);
+  const listPayment = useSelector(state => state.payment.listPayment);
 
-
+  useEffect(() => {
+    dispatch(getListTransporter());
+  }, []);
+  const listTransporter = useSelector(state => state.transporter.listTransporter);
+  
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getCart());
+    dispatch(getCartByServer())
   }, []);
 
   const [defaultAdd, setDfaultAdd] = useState(false);
@@ -68,9 +111,10 @@ const Checkout = () => {
   const totalCart = useSelector((state) => state.cart.total);
   // adding total with shipping method charges
   const totalnum = parseInt(totalCart);
-  let feeShip = 0;
-   if(totalCart <300000)  feeShip =parseInt(20000);
-  const totalWithShippingMethod = totalnum + feeShip -reduceVoucher;
+  // let feeShip = 0;
+  const [feeShip1, setFeeShip] = useState(0);
+  //  if(totalCart <300000)  feeShip =parseInt(20000);
+  const totalWithShippingMethod = totalnum + feeShip1 -reduceVoucher;
 
 
   // for delete item from cart
@@ -100,25 +144,78 @@ const Checkout = () => {
       orderDetailRequests: cart,
       userId: userID,
       paymentId : +paymentId,
-      // voucherId :voucherId1,
+      deliveryId : +transporterId,
+      voucherId :voucherId1,
       total : totalWithShippingMethod,
       discount : reduceVoucher,
-      shippingFee : feeShip,
+      shippingFee : feeShip1,
     };
     
     console.log("User Order Details", orderdata);
 
-    // dispatch(createOrder(orderdata));
+    dispatch(createOrder(orderdata));
 
 
-    // setTimeout(() => {
-    //   dispatch(clearCartContent());
-    //   localStorage.removeItem("cartItem");
-    //   localStorage.removeItem("orderData");
-    //   history.push("/thankyou")
-    //   console.log("the data is removed");
-    // }, 3000);
+    setTimeout(() => {
+      dispatch(clearCartContent());
+      localStorage.removeItem("cartItem");
+      history.push("/thankyou")
+      console.log("the data is removed");
+    }, 2000);
   };
+//////////////////////////////////
+
+const value = Number(totalWithShippingMethod/23000.0).toFixed(2);
+  const [paidFor, setPaidFor] = useState(false);
+  const [error, setError] = useState(null);
+  const paypalRef = useRef();
+  useEffect(() => {
+    window.paypal
+      .Buttons({
+        style: {
+          layout: 'horizontal',
+          size: 'small',
+          color:  'black',
+          shape:  'pill',
+          label:  'pay',
+          height: 40,
+          tagline: 'false'
+      },
+        createOrder: (data, actions) => {
+          return actions.order.create({
+            purchase_units: [
+              {
+                description: "Cosmetic store checkout",
+                amount: {
+                  currency_code: "USD",
+                  value: value,
+                },
+              },
+            ],
+          });
+        },
+        onApprove: async (data, actions) => {
+          const order = await actions.order.capture();
+          setPaidFor(true);
+          console.log("ORDER", order);
+           // goi API
+        //    const form = {
+        //     idBill : bill.billId ,
+        //     payer : order.payer.email_address,
+        //     incoming: k,
+        //   }
+        //   dispatch(payByTutor(form));
+          handleSubmit();
+
+        },
+        onError: (err) => {
+          setError(err);
+          console.error("ERROR", err);
+          alert("thanh toán thất bại, vui long thử lại")
+        },
+      })
+      .render(paypalRef.current);
+  }, [paymentId]);
 
   
 
@@ -145,7 +242,7 @@ const Checkout = () => {
         {/* ============== COMPONENT CHECKOUT =============== */}			
         <article className="card">
           <div className="content-body">
-            <h5 className="card-title">Thông tin nhận hàng </h5>
+            <h5 className="card-title">Thông tin nhận hàng</h5>
             <div className="row">
               {/* <div className="col-6 mb-3">
                 <label className="form-label">First name</label>
@@ -219,40 +316,50 @@ const Checkout = () => {
             </div> {/* row.// */}
 
             <hr className="my-4" />
-            <h5 className="card-title"> Phương thức thanh toán </h5> 
+            <h5 className="card-title"> Phương thức vận chuyển </h5> 
             <div className="row mb-3">
 
 
-              {listPayment.map((element)=>{
+              {listTransporter.map((element)=>{
+                if(element.isActive == true) 
                  return(
                   <div className="col-lg-4 mb-3">
                   <div className="box box-check">
                     <label className="form-check">
-                      <input required className="form-check-input" type="radio" name="paymentId" value={element.id} onChange={(e)=>setPaymentId(e.target.value)}/>
+                      <input required className="form-check-input" type="radio" name="transporterId" value={element.id} 
+                      onChange={(e)=>{
+                        setTransporterId(e.target.value)
+                        setFeeShip(element.fee);
+                      }
+                      }/>
                       <b className="border-oncheck" />
                       <span className="form-check-label">
                         {element.name} <br />
-                        <small className="text-muted"><div dangerouslySetInnerHTML={{ __html: element.description }} /></small>
+                        <small className="text-muted">{element.fee } VNĐ</small>
                       </span>
                     </label>
                   </div>
                 </div>
                 )
+                else return null;
               
               })}
-            
             </div> {/* row end.// */}
-              {paymentId ==1 ? (<div>
-                <div className="btn btn-warning">
+
+           
+
+
+
+              {/* {paymentId ==1 ? (<div>
+               
                 <PayPal  total = {totalWithShippingMethod} />
-                  Paypal
-                  </div>
-              </div>) : null}
+              
+                
+              </div>) : null} */}
+
+        
           
-            <div className="float-end">
-              <button className="btn btn-light me-3"> Hủy</button>
-              <button className="btn btn-success" onClick={() => handleSubmit()}>Đặt hàng</button>
-            </div>
+          
           </div> {/* card-body end.// */}
         </article> {/* card end.// */}
         {/* ============== COMPONENT CHECKOUT .// =============== */}
@@ -270,11 +377,10 @@ const Checkout = () => {
             <dd className="text-end text-danger"> - {reduceVoucher} VNĐ</dd>
           </dl>
           <dl className="dlist-align">
-            <dt>Shipping cost:</dt>
-            {totalCart < 300000 ? 
-            <dd className="text-end"> + 20000 VNĐ</dd> :
-            <dd className="text-end"> Free ship</dd>
-          }
+            <dt>Phí vận chuyển:</dt>
+           
+            <dd className="text-end"> + {feeShip1} VNĐ</dd> 
+          
           </dl>
           <hr />
           <dl className="dlist-align">
@@ -305,12 +411,53 @@ const Checkout = () => {
               <img src={item.image} className="img-sm rounded border" />
             </div>
             <figcaption className="info">
-              <a href="#" className="title">{item.name} </a>
+              <p  className="title">{item.name} </p>
               <div className="price text-muted">Tổng: {item.quantity*item.promotionPrice} VNĐ</div> {/* price .// */}
             </figcaption>
           </figure>
            ))
            : null}
+            <hr className="my-4" />
+            <h5 className="card-title"> Phương thức thanh toán </h5> 
+            <div className="row mb-3">
+
+
+              {listPayment.map((element)=>{
+                 if(element.isActive == true) 
+                 return(
+                  <div className="col-lg-12 mb-3">
+                  <div className="box box-check">
+                    <label className="form-check">
+                      <input required className="form-check-input" type="radio" name="paymentId" value={element.id} 
+                      onChange={(e)=>{
+                        setPaymentId(e.target.value)
+                      }
+                      }/>
+                      <b className="border-oncheck" />
+                      <span className="form-check-label">
+                        {element.name} <br />
+                        {/* <small className="text-muted">{element.description } VNĐ</small> */}
+                      </span>
+                    </label>
+                  </div>
+                </div>
+                )
+                else return null;
+              
+              })}
+            </div> {/* row end.// */}
+            <div className="float-end">
+              {!checkForm ? <button className="btn btn-success" disabled >Đặt hàng và thanh toán</button>
+              :
+              
+              paymentId == 2 ? 
+              <div>
+                 <div ref={paypalRef} ></div>
+              </div>
+              : 
+              <button className="btn btn-success"  onClick={() => handleSubmit()}>Đặt hàng</button>
+            }
+            </div>
         </article> 
         {/* ============== COMPONENT SUMMARY .// =============== */}
       </aside> {/* col.// */}

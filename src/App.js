@@ -14,7 +14,7 @@ function App() {
   //componentDidMount or componentDidUpdate
   useEffect(() => {
     if (!auth.authenticate) {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token-user");
       if (token != null || token != undefined)
       dispatch(getInformation({ token: token }));
     }

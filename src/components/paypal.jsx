@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 
 function PayPal(props) {
   const { total } = props
-  const value = Math.ceil(total/23000);
+  const value = Number(total/23000.0).toFixed(2);
   const dispatch = useDispatch();
 
   const [paidFor, setPaidFor] = useState(false);
@@ -13,6 +13,15 @@ function PayPal(props) {
   useEffect(() => {
     window.paypal
       .Buttons({
+        style: {
+          layout: 'horizontal',
+          size: 'small',
+          color:  'black',
+          shape:  'pill',
+          label:  'pay',
+          height: 40,
+          tagline: 'false'
+      },
         createOrder: (data, actions) => {
           return actions.order.create({
             purchase_units: [

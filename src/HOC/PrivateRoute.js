@@ -7,7 +7,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
     <Route
       {...rest}
       component={(props) => {
-        const token = window.localStorage.getItem("token");
+        const token = window.localStorage.getItem("token-user");
         if (token) {
           if(jwt_decode(token).exp < Date.now() / 1000){
             localStorage.clear();

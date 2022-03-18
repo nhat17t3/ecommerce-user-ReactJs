@@ -1,13 +1,22 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { useAlert } from "react-alert";
 import { useDispatch, useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 import { Link, useHistory } from "react-router-dom";
 import { filterFavouriteByUser, getListCategory, logout } from "../../actions";
 import { addToCart, getCart, removeItemFromCart } from "../../actions/cart";
 
+
+function useQuery() {
+  const { search } = useLocation();
+  
+  return React.useMemo(() => new URLSearchParams(search), [search]);
+}
+
 const MainHeader = (props) => {
   const history = useHistory();
 
+  let query = useQuery();
   // const [searchFeild, setSearchFeild] = useState("");
 
   // const handleSearch = (e) => {
@@ -30,10 +39,10 @@ const MainHeader = (props) => {
     dispatch(getCart());
   }, []);
 
-  useEffect(() => {
-    dispatch(getListCategory());
-  }, []);
-  const listCate = useSelector((state) => state.category.listCategory);
+  // useEffect(() => {
+  //   dispatch(getListCategory());
+  // }, []);
+  // const listCate = useSelector((state) => state.category.listCategory);
 
   useEffect(() => {
     dispatch(filterFavouriteByUser(userId));
@@ -58,6 +67,17 @@ const MainHeader = (props) => {
     dispatch(removeItemFromCart(index, item));
     dispatch(addToCart());
     alert.error("Deleted successfully!");
+  };
+
+
+  const [searchFeild, setSearchFeild] = useState(query.get("key"));
+  const handleSearch = (e) => {
+    e.preventDefault();
+    console.log(searchFeild, "search");
+    // if (searchFeild === "") dispatch(getListArticleByPage(limit, currentPage - 1,categoryArticleId));
+    // else dispatch(searchListArticleByName(searchFeild, limit, currentPage - 1));
+    if (searchFeild !== "") history.push(`/shop/search?key=${searchFeild}`);
+    else history.push(`/shop`);
   };
 
   return (
@@ -107,39 +127,24 @@ const MainHeader = (props) => {
                       </a>
                       <ul className="dropdown-menu">
                         <li>
-                          {" "}
                           <Link className="dropdown-item" to="/profile">
-                            {" "}
-                            Cá nhân{" "}
-                          </Link>{" "}
+                            Cá nhân
+                          </Link>
                         </li>
+                      
                         <li>
-                          {" "}
-                          <Link
-                            className="dropdown-item"
-                            to="/shipping-address"
-                          >
-                            {" "}
-                            Địa chỉ{" "}
-                          </Link>{" "}
-                        </li>
-                        <li>
-                          {" "}
                           <Link className="dropdown-item" to="/orders">
-                            {" "}
-                            Đơn hàng{" "}
-                          </Link>{" "}
+                            Đơn hàng
+                          </Link>
                         </li>
                         <li>
-                          {" "}
                           <a
                             className="dropdown-item"
                             href="/"
                             onClick={() => dispatch(logout())}
                           >
-                            {" "}
-                            Đăng xuất{" "}
-                          </a>{" "}
+                            Đăng xuất
+                          </a>
                         </li>
                       </ul>
                     </div>
@@ -148,13 +153,17 @@ const MainHeader = (props) => {
               </div>
               {/* col end.// */}
               <div className="col-lg-5 col-md-12 col-12">
-                <form action="#" className>
+                <form action="#" className onSubmit={handleSearch}>
                   <div className="input-group">
                     <input
                       type="search"
                       className="form-control"
                       style={{ width: "55%" }}
                       placeholder="Tìm kiếm sản phẩm"
+                      name="searchFeild"
+                      id="searchFeild"
+                      value={searchFeild}
+                      onChange={(e) => setSearchFeild(e.target.value)}
                     />
                     {/* <select className="form-select">
                 <option value>All type</option>
@@ -162,7 +171,7 @@ const MainHeader = (props) => {
                 <option value="comments">Only best</option>
                 <option value="content">Latest</option>
               </select> */}
-                    <button className="btn btn-warning">
+                    <button className="btn btn-warning"  type="submit">
                       <i className="fa fa-search" />
                     </button>
                   </div>
@@ -199,7 +208,7 @@ const MainHeader = (props) => {
                     Sản phẩm
                   </Link>
                 </li>
-                {listCate.map((element) => {
+                {/* {listCate.map((element) => {
                   if (element.parentId == 0)
                     return (
                       <li className="nav-item dropdown">
@@ -226,7 +235,7 @@ const MainHeader = (props) => {
                       </li>
                     );
                   else return null;
-                })}
+                })} */}
                 <li className="nav-item">
                   <Link className="nav-link color-custom" to="/blog">
                     Bài viết

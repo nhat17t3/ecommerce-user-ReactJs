@@ -42,28 +42,26 @@ const Thankyou = () => {
               </g>
             </svg>
             <div className="my-3">
-              <h4>Thank you for order</h4>
+              <h4>Cám ơn bạn đã đặt hàng</h4>
               <p>
-                Some information will be written here, bla bla lorem ipsum you
-                enter into any new area of science, you almost always find
-                yourself
+                Chúng tôi sẽ tiếp nhận thông tin đơn hàng và sớm giao đến bạn
               </p>
             </div>
           </div>
           <ul className="steps-wrap mx-auto" style={{ maxWidth: "600px" }}>
             <li className="step active">
               <span className="icon">1</span>
-              <span className="text">Order received</span>
+              <span className="text">Nhận đơn</span>
             </li>
             {/* step.// */}
             <li className="step ">
               <span className="icon">2</span>
-              <span className="text">Confirmation</span>
+              <span className="text">Xác nhận</span>
             </li>
             {/* step.// */}
             <li className="step ">
               <span className="icon">3</span>
-              <span className="text">Delivery</span>
+              <span className="text">Giao hàng</span>
             </li>
             {/* step.// */}
           </ul>

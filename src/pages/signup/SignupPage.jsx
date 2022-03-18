@@ -1,5 +1,6 @@
 import React, { Fragment, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Redirect } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { signup } from "../../actions";
 import MainFooter from "../../layouts/footer";
@@ -7,11 +8,11 @@ import MainHeader from "../../layouts/header";
 
 const SignupPage = () => {
   const [username, setUsername] = useState("");
-  const [email,setEmail] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [firstName , setFirstName] = useState("");
-  const [lastName , setLastName] = useState("");
-  const [phone , setPhone] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
   // const [roles , setRoles] = useState([]);
 
   const dispatch = useDispatch();
@@ -27,20 +28,27 @@ const SignupPage = () => {
       firstName,
       lastName,
       phone,
-      roles : ["ROLE_USER"]
+      roles: ["ROLE_USER"],
     };
 
     console.log(send);
     dispatch(signup(send));
+
+    // setEmail("");
+    // setUsername("");
+    // setPassword("");
+    // setPhone("");
+    // setFirstName("");
+    // setLastName("");
   };
 
-  // if (auth.authenticate) {
-  //   return <Redirect to={`/`} />;
+  // if (auth.message == "") {
+  //   return <Redirect to={`/signin`} />;
   // }
 
-  // if (auth.authenticating) {
-  //   return <div className="loader"></div>;
-  // }
+  if (auth.authenticating) {
+    return <div className="loader"></div>;
+  }
 
   return (
     <Fragment>
@@ -54,10 +62,8 @@ const SignupPage = () => {
                 <div className="card-body">
                   <h3 className="mb-4">Đăng kí</h3>
                   <form onSubmit={signupUser}>
-                  <div className="mb-3">
-                      <label className="form-label">
-                        Họ
-                      </label>
+                    <div className="mb-3">
+                      <label className="form-label">Họ</label>
                       <input
                         type="text"
                         name="firstName"
@@ -69,9 +75,7 @@ const SignupPage = () => {
                       />
                     </div>
                     <div className="mb-3">
-                      <label className="form-label">
-                        Tên
-                      </label>
+                      <label className="form-label">Tên</label>
                       <input
                         type="text"
                         name="lastName"
@@ -83,9 +87,7 @@ const SignupPage = () => {
                       />
                     </div>
                     <div className="mb-3">
-                      <label className="form-label">
-                        Tên đăng nhập
-                      </label>
+                      <label className="form-label">Tên đăng nhập</label>
                       <input
                         type="text"
                         name="username"
@@ -97,9 +99,7 @@ const SignupPage = () => {
                       />
                     </div>
                     <div className="mb-3">
-                      <label className="form-label">
-                        Email
-                      </label>
+                      <label className="form-label">Email</label>
                       <input
                         type="email"
                         name="email"
@@ -111,11 +111,8 @@ const SignupPage = () => {
                       />
                     </div>
 
-                   
                     <div className="mb-3">
-                      <label className="form-label">
-                        Số điện thoại
-                      </label>
+                      <label className="form-label">Số điện thoại</label>
                       <input
                         type="number"
                         name="phone"
@@ -142,14 +139,21 @@ const SignupPage = () => {
                         required
                       />
                     </div>
-                   
-                    <button className="btn w-100 btn-primary mb-4" type="submit">
+
+                    <button
+                      className="btn w-100 btn-primary mb-4"
+                      type="submit"
+                    >
                       Đăng kí
                     </button>
                   </form>
                   {/* form end.// */}
-                  <p className="mb-1 text-center">Bạn đã có tài khoản? <Link to="/signin" href="#">Đăng nhập</Link></p>
-
+                  <p className="mb-1 text-center">
+                    Bạn đã có tài khoản?{" "}
+                    <Link to="/signin" href="#">
+                      Đăng nhập
+                    </Link>
+                  </p>
                 </div>
                 {/* card-body end.// */}
               </div>

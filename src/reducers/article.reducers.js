@@ -5,6 +5,7 @@ const initState = {
   article: {},
   loading: false,
   message: "",
+  count: 0
 };
 
 export default (state = initState, action) => {
@@ -21,6 +22,7 @@ export default (state = initState, action) => {
         loading: false,
         // message:action.payload.message,
         listArticle: action.payload.dataResponse,
+        count: action.payload.count
       };
       break;
     case articleConstants.GET_ARTICLE_BY_PAGE_FAILURE:
