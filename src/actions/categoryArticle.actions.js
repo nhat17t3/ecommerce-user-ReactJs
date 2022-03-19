@@ -17,7 +17,7 @@ export const getListCategoryArticle = () => {
         },
       });
 
-      toast("get list categoryArticle success");
+      // toast("get list categoryArticle success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -27,7 +27,7 @@ export const getListCategoryArticle = () => {
           message: message,
         },
       });
-      toast("get list categoryArticle error");
+      // toast("get list categoryArticle error");
     }
   };
 };
@@ -47,7 +47,7 @@ export const getCategoryArticleById = (id) => {
         },
       });
 
-      toast("get  categoryArticle by id success");
+      // toast("get  categoryArticle by id success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -57,7 +57,7 @@ export const getCategoryArticleById = (id) => {
           message: message,
         },
       });
-      toast("get  categoryArticle by id error");
+      // toast("get  categoryArticle by id error");
     }
   };
 };
@@ -80,7 +80,7 @@ export const createCategoryArticle = (form) => {
         },
       });
       toast.success("tạo danh mục bài viết sản phẩm thành công");
-      // dispatch(getListCategoryArticle());
+      dispatch(getListCategoryArticle());
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -145,7 +145,7 @@ export const updateCategoryArticle = (id ,form) => {
       });
       toast.success("cập nhật danh mục bài viết sản phẩm thành công");
 
-      // dispatch(getListCategoryArticle());
+      dispatch(getListCategoryArticle());
     } else {
       const { dataResponse, message } = res.data;
 

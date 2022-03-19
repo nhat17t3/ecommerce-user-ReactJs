@@ -17,7 +17,7 @@ export const getListFeedbackByPage = (limit=10,page=0) => {
         },
       });
 
-      toast("get list feedback by page success");
+      // toast("get list feedback by page success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -27,7 +27,7 @@ export const getListFeedbackByPage = (limit=10,page=0) => {
           message: message,
         },
       });
-      toast("get list feedback by page error");
+      // toast("get list feedback by page error");
     }
   };
 };
@@ -47,7 +47,7 @@ export const getFeedbackById = (id) => {
         },
       });
 
-      toast("get feedback by id success");
+      // toast("get feedback by id success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -57,7 +57,7 @@ export const getFeedbackById = (id) => {
           message: message,
         },
       });
-      toast("get feedback by id error");
+      // toast("get feedback by id error");
     }
   };
 };

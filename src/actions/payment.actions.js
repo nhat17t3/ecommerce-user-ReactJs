@@ -17,7 +17,7 @@ export const getListPayment = () => {
         },
       });
 
-      toast("get list payment success");
+      // toast("get list payment success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -27,7 +27,7 @@ export const getListPayment = () => {
           message: message,
         },
       });
-      toast("get list payment error");
+      // toast("get list payment error");
     }
   };
 };

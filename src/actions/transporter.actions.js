@@ -17,7 +17,7 @@ export const getListTransporter = () => {
         },
       });
 
-      toast("get list transporter success");
+      // toast("get list transporter success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -27,7 +27,7 @@ export const getListTransporter = () => {
           message: message,
         },
       });
-      toast("get list transporter error");
+      // toast("get list transporter error");
     }
   };
 };
@@ -47,7 +47,7 @@ export const getTransporterById = (id) => {
         },
       });
 
-      toast("get transporter by id success");
+      // toast("get transporter by id success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -57,7 +57,7 @@ export const getTransporterById = (id) => {
           message: message,
         },
       });
-      toast("get transporter by id error");
+      // toast("get transporter by id error");
     }
   };
 };

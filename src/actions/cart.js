@@ -88,7 +88,7 @@ export const getCartByServer = () => {
         },
       });
 
-      toast("get cart success");
+      // toast("get cart success");
     } else {
      
       toast("get cart error");

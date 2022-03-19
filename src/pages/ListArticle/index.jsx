@@ -35,11 +35,18 @@ function ListArticle(props) {
     );
     const limit = 5;
     const [categoryArticleId , setCategoryArticleId] = useState(0);
+    const [addSearch, setAddSearch] = useState(true);
+
+
+  // useEffect(() => {
+  //   if (searchFeild === "") dispatch(getListArticleByPage(limit, currentPage - 1,categoryArticleId));
+  //   else dispatch(searchListArticleByName(searchFeild, limit, currentPage - 1));
+  // }, [currentPage,categoryArticleId]);
 
   useEffect(() => {
-    if (searchFeild === "") dispatch(getListArticleByPage(limit, currentPage - 1,categoryArticleId));
-    else dispatch(searchListArticleByName(searchFeild, limit, currentPage - 1));
-  }, [currentPage,categoryArticleId]);
+    dispatch(searchListArticleByName(searchFeild,categoryArticleId, limit, currentPage - 1));
+    
+  }, [currentPage, categoryArticleId, addSearch]);
 
   const articles = useSelector((state) => state.article.listArticle);
   const count = useSelector((state) => state.article.count);
@@ -106,16 +113,19 @@ function ListArticle(props) {
   const handleSearch = (e) => {
     e.preventDefault();
     setCurrentPage(1);
-    console.log(searchFeild, "search");
-    if(searchFeild.trim()!= ""){
-      // history.push(`?search=${searchFeild}&page=${1}`); 
-      dispatch(searchListArticleByName(searchFeild, limit, 0));
+    // console.log(searchFeild, "search");
+    // if(searchFeild.trim()!= ""){
+    //   // history.push(`?search=${searchFeild}&page=${1}`); 
+    //   dispatch(searchListArticleByName(searchFeild, limit, 0));
 
-    } 
-    else {
-      dispatch(getListArticleByPage(limit, 0));
-      history.push('/blog')
-    }
+    // } 
+    // else {
+    //   dispatch(getListArticleByPage(limit, 0));
+    //   history.push('/blog')
+    // }
+
+    setAddSearch(!addSearch);
+
   };
   return (
     <Fragment>

@@ -21,13 +21,15 @@ const Login_Page1 = () => {
 
     console.log(send);
     dispatch(login(send));
+    setUsername("");
+    setPassword("");
   };
 
   if (auth.authenticate) {
     return <Redirect to={`/`} />;
   }
 
-  if (auth.authenticating) {
+  if (auth.loading) {
     return <div className="loader"></div>;
   }
 

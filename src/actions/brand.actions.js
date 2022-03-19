@@ -17,7 +17,7 @@ export const getListBrand = () => {
         },
       });
 
-      toast("get list brand success");
+      // toast("get list brand success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -27,7 +27,7 @@ export const getListBrand = () => {
           message: message,
         },
       });
-      toast("get list brand error");
+      // toast("get list brand error");
     }
   };
 };
@@ -50,7 +50,7 @@ export const createBrand = (form) => {
         },
       });
       toast.success("tạo thương hiệu thành công");
-      // dispatch(getListBrand());
+      dispatch(getListBrand());
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -115,7 +115,7 @@ export const updateBrand = (id,form) => {
       });
       toast.success("cập nhật thương hiệu thành công");
 
-      // dispatch(getListBrand());
+      dispatch(getListBrand());
     } else {
       const { dataResponse, message } = res.data;
 

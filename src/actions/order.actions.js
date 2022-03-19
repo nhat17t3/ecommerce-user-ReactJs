@@ -17,7 +17,7 @@ export const getListOrderByPage = (limit=10,page=0) => {
         },
       });
 
-      toast("get list order by page success");
+      // toast("get list order by page success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -27,7 +27,7 @@ export const getListOrderByPage = (limit=10,page=0) => {
           message: message,
         },
       });
-      toast("get list order by page error");
+      // toast("get list order by page error");
     }
   };
 };
@@ -47,7 +47,7 @@ export const getOrderById = (id) => {
         },
       });
 
-      toast("get order by id success");
+      // toast("get order by id success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -57,7 +57,7 @@ export const getOrderById = (id) => {
           message: message,
         },
       });
-      toast("get order by id error");
+      // toast("get order by id error");
     }
   };
 };
@@ -77,7 +77,7 @@ export const searchListOrderByName = (key,limit,page) => {
         },
       });
 
-      toast("search list order by name success");
+      // toast("search list order by name success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -87,7 +87,7 @@ export const searchListOrderByName = (key,limit,page) => {
           message: message,
         },
       });
-      toast("search list order by name error");
+      // toast("search list order by name error");
     }
   };
 };
@@ -108,7 +108,7 @@ export const filterOrderByUser = (userId) => {
         },
       });
 
-      toast("filter order by user success");
+      // toast("filter order by user success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -118,7 +118,7 @@ export const filterOrderByUser = (userId) => {
           message: message,
         },
       });
-      toast("filter order by user error");
+      // toast("filter order by user error");
     }
   };
 };
@@ -138,7 +138,7 @@ export const filterOrderByStatus = (status,limit,page) => {
         },
       });
 
-      toast("filter order by status success");
+      // toast("filter order by status success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -148,7 +148,7 @@ export const filterOrderByStatus = (status,limit,page) => {
           message: message,
         },
       });
-      toast("filter order by status error");
+      // toast("filter order by status error");
     }
   };
 };

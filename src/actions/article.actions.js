@@ -18,7 +18,7 @@ export const getListArticleByPage = (limit=10,page=0,categoryArticleId=0) => {
         },
       });
 
-      toast("get list article by page success");
+      // toast("get list article by page success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -28,7 +28,7 @@ export const getListArticleByPage = (limit=10,page=0,categoryArticleId=0) => {
           message: message,
         },
       });
-      toast("get list article by page error");
+      // toast("get list article by page error");
     }
   };
 };
@@ -48,7 +48,7 @@ export const getArticleById = (id) => {
         },
       });
 
-      toast("get article by id success");
+      // toast("get article by id success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -58,27 +58,29 @@ export const getArticleById = (id) => {
           message: message,
         },
       });
-      toast("get article by id error");
+      // toast("get article by id error");
     }
   };
 };
 
-export const searchListArticleByName = (key,limit,page) => {
+export const searchListArticleByName = (name,categoryArticleId,limit,page) => {
   return async (dispatch) => {
     dispatch({ type: articleConstants.SEARCH_ARTICLE_BY_NAME_REQUEST });
-    const res = await axios.get(`/api/articles/search?q=${key}&limit=${limit}&page=${page}`);
+    // const res = await axios.get(`/api/articles/search?q=${key}&limit=${limit}&page=${page}`);
+    const res = await axios.get(`/api/articles/filter?name=${name}&categoryArticleId=${categoryArticleId}&limit=${limit}&page=${page}`);
 
     if (res.status === 200) {
-      const { dataResponse, message } = res.data;
+      const { dataResponse, message ,count } = res.data;
       dispatch({
         type: articleConstants.SEARCH_ARTICLE_BY_NAME_SUCCESS,
         payload: {
           dataResponse: dataResponse,
           message: message,
+          count: count
         },
       });
 
-      toast("search list article by name success");
+      // toast("search list article by name success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -88,7 +90,7 @@ export const searchListArticleByName = (key,limit,page) => {
           message: message,
         },
       });
-      toast("search list article by name error");
+      // toast("search list article by name error");
     }
   };
 };

@@ -17,7 +17,7 @@ export const getListSlide = () => {
         },
       });
 
-      toast("get list slide success");
+      // toast("get list slide success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -27,7 +27,7 @@ export const getListSlide = () => {
           message: message,
         },
       });
-      toast("get list slide error");
+      // toast("get list slide error");
     }
   };
 };
@@ -47,7 +47,7 @@ export const getSlideById = (id) => {
         },
       });
 
-      toast("get slide by id success");
+      // toast("get slide by id success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -57,7 +57,7 @@ export const getSlideById = (id) => {
           message: message,
         },
       });
-      toast("get slide by id error");
+      // toast("get slide by id error");
     }
   };
 };

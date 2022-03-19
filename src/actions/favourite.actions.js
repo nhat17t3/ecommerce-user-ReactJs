@@ -62,7 +62,7 @@ export const createFavourite = (form) => {
         },
       });
 
-      toast.error("tạo yêu thích thất bại");
+      toast.error("Bạn đã yêu thích sản phẩm này");
     }
   };
 };
@@ -80,7 +80,7 @@ export const deleteFavourite = (form) => {
           message: message,
         },
       });
-      toast.success("xóa yêu thích thành công");
+      toast.success("xóa sản phẩm yêu thích thành công");
 
       // dispatch(getListFavouriteByPage());
     } else {

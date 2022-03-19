@@ -45,6 +45,7 @@ export default (state = initState, action) => {
         loading: false,
         // message:action.payload.message,
         listArticle: action.payload.dataResponse,
+        count: action.payload.count
       };
       break;
     case articleConstants.SEARCH_ARTICLE_BY_NAME_FAILURE:

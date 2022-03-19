@@ -34,19 +34,19 @@ const SignupPage = () => {
     console.log(send);
     dispatch(signup(send));
 
-    // setEmail("");
-    // setUsername("");
-    // setPassword("");
-    // setPhone("");
-    // setFirstName("");
-    // setLastName("");
+    setEmail("");
+    setUsername("");
+    setPassword("");
+    setPhone("");
+    setFirstName("");
+    setLastName("");
   };
 
   // if (auth.message == "") {
   //   return <Redirect to={`/signin`} />;
   // }
 
-  if (auth.authenticating) {
+  if (auth.loading) {
     return <div className="loader"></div>;
   }
 

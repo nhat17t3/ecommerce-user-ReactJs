@@ -18,7 +18,7 @@ export const getListProductByPage = (limit=10,page=0,categoryId = 0 ,brandId=0, 
         },
       });
 
-      toast("get list product by page success");
+      // toast("get list product by page success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -29,7 +29,7 @@ export const getListProductByPage = (limit=10,page=0,categoryId = 0 ,brandId=0, 
           
         },
       });
-      toast("get list product by page error");
+      // toast("get list product by page error");
     }
   };
 };
@@ -49,7 +49,7 @@ export const getProductById = (id) => {
         },
       });
 
-      toast("get product by id success");
+      // toast("get product by id success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -59,7 +59,7 @@ export const getProductById = (id) => {
           message: message,
         },
       });
-      toast("get product by id error");
+      // toast("get product by id error");
     }
   };
 };
@@ -80,7 +80,7 @@ export const searchListProductByName = (key,limit,page) => {
         },
       });
 
-      toast("search list product by name success");
+      // toast("search list product by name success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -90,7 +90,7 @@ export const searchListProductByName = (key,limit,page) => {
           message: message,
         },
       });
-      toast("search list product by name error");
+      // toast("search list product by name error");
     }
   };
 };
@@ -111,7 +111,7 @@ export const filterProductByBrand = (brandId,limit,page) => {
         },
       });
 
-      toast("filter product by brand success");
+      // toast("filter product by brand success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -121,7 +121,7 @@ export const filterProductByBrand = (brandId,limit,page) => {
           message: message,
         },
       });
-      toast("filter product by brand error");
+      // toast("filter product by brand error");
     }
   };
 };
@@ -142,7 +142,7 @@ export const filterProductByCategory = (cateId,limit,page) => {
         },
       });
 
-      toast("filter product by category success");
+      // toast("filter product by category success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -152,7 +152,7 @@ export const filterProductByCategory = (cateId,limit,page) => {
           message: message,
         },
       });
-      toast("filter product by category error");
+      // toast("filter product by category error");
     }
   };
 };

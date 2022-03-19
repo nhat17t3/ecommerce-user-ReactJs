@@ -17,7 +17,7 @@ export const getListVoucherByPage = (limit=10,page=0) => {
         },
       });
 
-      toast("get list voucher by page success");
+      // toast("get list voucher by page success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -27,7 +27,7 @@ export const getListVoucherByPage = (limit=10,page=0) => {
           message: message,
         },
       });
-      toast("get list voucher by page error");
+      // toast("get list voucher by page error");
     }
   };
 };
@@ -47,7 +47,7 @@ export const searchListVoucherByName = (key,limit,page) => {
         },
       });
 
-      toast("search list voucher by name success");
+      // toast("search list voucher by name success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -57,7 +57,7 @@ export const searchListVoucherByName = (key,limit,page) => {
           message: message,
         },
       });
-      toast("search list voucher by name error");
+      // toast("search list voucher by name error");
     }
   };
 };
@@ -77,7 +77,7 @@ export const getVoucherById = (id) => {
         },
       });
 
-      toast("get voucher by id success");
+      // toast("get voucher by id success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -87,7 +87,7 @@ export const getVoucherById = (id) => {
           message: message,
         },
       });
-      toast("get voucher by id error");
+      // toast("get voucher by id error");
     }
   };
 };

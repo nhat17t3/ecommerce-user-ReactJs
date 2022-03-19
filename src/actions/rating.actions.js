@@ -17,7 +17,7 @@ export const getListRatingByPage = (limit=10,page=0) => {
         },
       });
 
-      toast("get list rating by page success");
+      // toast("get list rating by page success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -27,7 +27,7 @@ export const getListRatingByPage = (limit=10,page=0) => {
           message: message,
         },
       });
-      toast("get list rating by page error");
+      // toast("get list rating by page error");
     }
   };
 };
@@ -47,7 +47,7 @@ export const getRatingById = (id) => {
         },
       });
 
-      toast("get rating by id success");
+      // toast("get rating by id success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -57,7 +57,7 @@ export const getRatingById = (id) => {
           message: message,
         },
       });
-      toast("get rating by id error");
+      // toast("get rating by id error");
     }
   };
 };
@@ -77,7 +77,7 @@ export const filterRatingByProduct = (productId,limit,page) => {
         },
       });
 
-      toast("filter rating by product success");
+      // toast("filter rating by product success");
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -87,7 +87,7 @@ export const filterRatingByProduct = (productId,limit,page) => {
           message: message,
         },
       });
-      toast("filter rating by product error");
+      // toast("filter rating by product error");
     }
   };
 };
@@ -122,7 +122,7 @@ export const createRating = (form) => {
         },
       });
 
-      toast.error("tạo đánh giá thất bại");
+      toast.error("Bạn đã đánh giá sản phẩm này rồi");
     }
   };
 };
