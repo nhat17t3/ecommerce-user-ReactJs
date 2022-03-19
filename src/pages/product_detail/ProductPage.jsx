@@ -27,6 +27,7 @@ import MainFooter from "../../layouts/footer";
 import MainHeader from "../../layouts/header";
 import ReactStars from "react-rating-stars-component";
 import Moment from "react-moment";
+import { toast } from "react-toastify";
 
 const Product_Page = (props) => {
   const dispatch = useDispatch();
@@ -94,7 +95,8 @@ const Product_Page = (props) => {
       } else {
         itemQty = product.quantity;
       }
-      alert.success(`Already in cart!`);
+      // alert.success(`Already in cart!`);
+      toast.success("Sản phẩm đã có trong giỏ hàng");
       dispatch(increaseItemQuantity(
         productIndex,
         product,
@@ -103,7 +105,8 @@ const Product_Page = (props) => {
       // props.DetailincreaseItemQuantity(productIndex, product, itemQty + 1);
     } else {
       dispatch(addItemToCart(Object.assign({}, product, { quantity: amount })));
-      alert.success("Successfully added to cart!");
+      // alert.success("Successfully added to cart!");
+      toast.success("Thêm sản phẩm vào giỏ hàng thành công");
     }
     // to add the product in localstorage
     dispatch(addToCart());

@@ -149,6 +149,7 @@ const Checkout = () => {
       total : totalWithShippingMethod,
       discount : reduceVoucher,
       shippingFee : feeShip1,
+      status : 0,
     };
     
     console.log("User Order Details", orderdata);

@@ -33,12 +33,11 @@ function Contact(props) {
     console.log(send);
     dispatch(createFeedback(send));
 
-    // setEmail("");
-    // setUsername("");
-    // setPassword("");
-    // setPhone("");
-    // setFirstName("");
-    // setLastName("");
+    setEmail("");
+    setName("");
+    setPhone("");
+    setTitle("");
+    setContent("");
   };
 
   // useEffect(() => {
