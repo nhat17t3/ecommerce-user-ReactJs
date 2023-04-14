@@ -126,7 +126,7 @@ const Product_Page = (props) => {
     setAmount(amount - 1);
   };
 
-  const userId = useSelector((state) => state.auth.user.id);
+  const userId = useSelector((state) => state.auth.user?.id);
   useEffect(() => {
     dispatch(filterFavouriteByUser(userId));
   }, [userId]);
@@ -136,18 +136,18 @@ const Product_Page = (props) => {
     let productExists = false;
     let productIndex = -1;
     listFavourite.forEach((p, idx) => {
-      if (item.id === p.product.id) {
+      if (item.id === p.product?.id) {
         productExists = true;
         productIndex = idx;
       }
     });
     if (productExists) {
-      alert.success(`Already in Wishlist!`);
+      // alert.success(`Already in Wishlist!`);
     } else {
       await dispatch(createFavourite({ userId: userId, productId: item.id }));
       dispatch(filterFavouriteByUser(userId));
 
-      alert.success("Successfully added to Wishlist!");
+      // alert.success("Successfully added to Wishlist!");
     }
   };
   const [show, setShow] = useState(false);

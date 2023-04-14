@@ -201,6 +201,18 @@ const Shop_Page = () => {
 
   const listCategory = useSelector((state) => state.category.listCategory);
 
+
+
+  const [searchFeild, setSearchFeild] = useState(query.get("key"));
+  const handleSearch = (e) => {
+    e.preventDefault();
+    console.log(searchFeild, "search");
+    // if (searchFeild === "") dispatch(getListArticleByPage(limit, currentPage - 1,categoryArticleId));
+    // else dispatch(searchListArticleByName(searchFeild, limit, currentPage - 1));
+    if (searchFeild !== "") history.push(`/shop/search?key=${searchFeild}`);
+    else history.push(`/shop`);
+  };
+
   return (
     <Fragment>
       <MainHeader />
@@ -336,6 +348,30 @@ const Shop_Page = () => {
             {/* col .// */}
             <main className="col-lg-9">
               <header className="d-sm-flex align-items-center border-bottom mb-4 pb-3">
+
+              {/* <div className="col-lg-5 col-md-12 col-12">
+                <form action="#" className onSubmit={handleSearch}>
+                  <div className="input-group">
+                    <input
+                      type="search"
+                      className="form-control"
+                      style={{ width: "55%" }}
+                      placeholder="Tìm kiếm sản phẩm"
+                      name="searchFeild"
+                      id="searchFeild"
+                      value={searchFeild}
+                      onChange={(e) => setSearchFeild(e.target.value)}
+                    />
+                    
+                    <button className="btn btn-warning"  type="submit">
+                      <i className="fa fa-search" />
+                    </button>
+                  </div>
+                  
+                </form>
+              </div> */}
+
+
                 {/* <strong className="d-block py-2">32 Items found </strong> */}
                 <div className="ms-auto">
                   <select

@@ -62,7 +62,7 @@ export const createFavourite = (form) => {
         },
       });
 
-      toast.error("Bạn đã yêu thích sản phẩm này");
+      toast.error("Tạo yêu thích sản phẩm thất bại");
     }
   };
 };

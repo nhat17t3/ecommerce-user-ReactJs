@@ -122,7 +122,7 @@ export const createRating = (form) => {
         },
       });
 
-      toast.error("Bạn đã đánh giá sản phẩm này rồi");
+      toast.error("Đánh giá thất bại");
     }
   };
 };

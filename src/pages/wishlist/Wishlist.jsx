@@ -115,7 +115,7 @@ const listProduct = useSelector((state) => state.favourite.listFavourite)
 
     await dispatch(deleteFavourite({userId: userId, productId : item.id }));
       dispatch(filterFavouriteByUser(userId));
-    alert.error('Deleted successfully!');
+    // alert.error('Deleted successfully!');
   };
 
   
@@ -203,7 +203,7 @@ const listProduct = useSelector((state) => state.favourite.listFavourite)
                           />
                         </div>
                         <div className="info">
-                          <p className="title">{item.name}</p>
+                          <Link to={`product-detail/${item.id}`} className="title">{item.name}</Link>
                           <span className="text-muted">{item.category.name}</span>
                         </div>
                       </a>

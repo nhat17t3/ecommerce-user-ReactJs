@@ -3,7 +3,7 @@
 }
 
 .bg-custom {
-    background-color: rgb(41 102 64);
+    background-color: rgb(41 102 64) !important;
   
 }
 
@@ -85,4 +85,16 @@
   margin-bottom: 1rem;
   overflow: hidden;
   background-color: #fff;
+}
+
+#navMenu .hoverItem:hover {
+   color: rgb(211, 24, 46) !important;
+}
+
+.search-box {
+
+}
+
+.search-button:hover .search-box {
+  display: none;
 }

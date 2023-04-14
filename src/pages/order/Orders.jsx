@@ -136,7 +136,7 @@ const Orders = () => {
                   <li className="col-xl-4  col-lg-6">
                     <figure className="itemside mb-3">
                       <div className="aside">
-                        <img width={72} height={72} src={"http://localhost:8080/files/" + detail.product?.image} className="img-sm rounded border" />
+                        <img width={72} height={72} src={"https://doantotngiepbackendspringboot-production.up.railway.app/files/" + detail.product?.image} className="img-sm rounded border" />
                       </div>
                       <figcaption className="info">
                         <p className="title">{detail.product?.name}</p>

@@ -156,7 +156,7 @@ export default function Main() {
   </div> 
 </section> */}
 
-      <section className="section-intro   container">
+      <section className="section-intro  ">
         <Carousel activeIndex={index1} onSelect={handleSelect} interval={2000}>
           {listSlide.map((element, index) => {
             if (element.isActive == true)
@@ -167,8 +167,8 @@ export default function Main() {
                     src={element.image}
                     alt="First slide"
                     // width={}
-                    height={500}
-                    style={{ width: "100%" }}
+                    // height={650}
+                    style={{ width: "100%", maxHeight: "650px" }}
                   />
                   {/* <Carousel.Caption>
           <h3>First slide label</h3>
