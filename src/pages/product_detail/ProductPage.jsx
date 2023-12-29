@@ -1,33 +1,16 @@
-import PropTypes from "prop-types";
-import React, { Fragment, useEffect, useState } from "react";
-import { useAlert } from "react-alert";
-import { Button, Modal } from "react-bootstrap";
-import { connect, useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router-dom";
-import {
-  createFavourite,
-  createRating,
-  filterFavouriteByUser,
-  filterRatingByProduct,
-  getListBrand,
-  getListCategory,
-  getProductById,
-} from "../../actions";
+import { toast } from "react-toastify";
+import { getListCategory, getProductById } from "../../actions";
 import {
   addItemToCart,
   addToCart,
-  DetaildecreaseItemQuantity,
-  DetailedProducts,
-  DetailincreaseItemQuantity,
   getCart,
   getCartByServer,
   increaseItemQuantity,
 } from "../../actions/cart";
-import MainFooter from "../../layouts/footer";
-import MainHeader from "../../layouts/header";
-import ReactStars from "react-rating-stars-component";
-import Moment from "react-moment";
-import { toast } from "react-toastify";
+import Layout from "../../layouts/Layout";
 
 const Product_Page = (props) => {
   const dispatch = useDispatch();
@@ -36,20 +19,12 @@ const Product_Page = (props) => {
 
   useEffect(() => {
     dispatch(getCart());
-    
-    dispatch(getCartByServer())
+    dispatch(getCartByServer());
   }, []);
-
-  useEffect(() => {
-    dispatch(getListBrand());
-  }, []);
-
-  const listBrand = useSelector((state) => state.brand.listBrand);
 
   useEffect(() => {
     dispatch(getListCategory());
   }, []);
-
   const listCategory = useSelector((state) => state.category.listCategory);
 
   useEffect(() => {
@@ -57,18 +32,17 @@ const Product_Page = (props) => {
   }, []);
 
   const findItem = useSelector((state) => state.product.product);
-  const [imageProduct, setImageProduct] = useState(findItem.image);
-
-
-  // let findItem1 = Object.assign({}, findItem, { quantity: 1 });
-
-  // for show alert
-  const alert = useAlert();
+  var maniImagePath = findItem?.images?.length
+    ? findItem.images[0].imagePath
+    : null;
+  var detailImagePath = findItem?.images?.filter(function (word) {
+    return word.isPrimary != true;
+  });
+  console.log(detailImagePath);
 
   // get all product from redux store
   // const products = useSelector((state) => state.cart.Detail_Products);
   // console.log("detailed products is", products);
-
   // get cart product from the store
   const cartProducts = useSelector((state) => state.cart.products);
 
@@ -95,28 +69,17 @@ const Product_Page = (props) => {
       } else {
         itemQty = product.quantity;
       }
-      // alert.success(`Already in cart!`);
       toast.success("Sản phẩm đã có trong giỏ hàng");
-      dispatch(increaseItemQuantity(
-        productIndex,
-        product,
-        product.quantity + amount
-      ));
-      // props.DetailincreaseItemQuantity(productIndex, product, itemQty + 1);
+      dispatch(
+        increaseItemQuantity(productIndex, product, product.quantity + amount)
+      );
     } else {
       dispatch(addItemToCart(Object.assign({}, product, { quantity: amount })));
-      // alert.success("Successfully added to cart!");
       toast.success("Thêm sản phẩm vào giỏ hàng thành công");
     }
     // to add the product in localstorage
     dispatch(addToCart());
   };
-  // const [formData, setFormData] = useState({
-  //   quantity: 0,
-  //   products: products,
-  //   cart: [],
-  //   subTotal: 0
-  // });
 
   const increaseQty = () => {
     setAmount(amount + 1);
@@ -126,510 +89,941 @@ const Product_Page = (props) => {
     setAmount(amount - 1);
   };
 
-  const userId = useSelector((state) => state.auth.user?.id);
-  useEffect(() => {
-    dispatch(filterFavouriteByUser(userId));
-  }, [userId]);
-  const listFavourite = useSelector((state) => state.favourite.listFavourite);
-
-  const AddToWishList = async (item) => {
-    let productExists = false;
-    let productIndex = -1;
-    listFavourite.forEach((p, idx) => {
-      if (item.id === p.product?.id) {
-        productExists = true;
-        productIndex = idx;
-      }
-    });
-    if (productExists) {
-      // alert.success(`Already in Wishlist!`);
-    } else {
-      await dispatch(createFavourite({ userId: userId, productId: item.id }));
-      dispatch(filterFavouriteByUser(userId));
-
-      // alert.success("Successfully added to Wishlist!");
-    }
-  };
-  const [show, setShow] = useState(false);
-  const [star, setStar] = useState(5);
-  const [ratingContent, setRatingContent] = useState("");
-  const rateStar = {
-    size: 25,
-    count: 5,
-    isHalf: false,
-    value: 5,
-    color: "black",
-    activeColor: "yellow",
-    onChange: (newValue) => {
-      console.log(`Example 3: new value is ${newValue}`);
-      setStar(newValue);
-    },
-  };
-
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-  const handleRating = () => {
-    const rating = {
-      userId: +userId,
-      productId: findItem.id,
-      star: +star,
-      content: ratingContent,
-    };
-
-    dispatch(createRating(rating));
-    console.log(rating);
-    setShow(false);
-    setRatingContent("");
-    setStar(5);
-  };
-
-  useEffect(() => {
-    dispatch(filterRatingByProduct(findItem.id, 100, 0));
-  }, [findItem]);
-  const listRating = useSelector((state) => state.rating.listRating);
-
-  // const images = [];
-  // findItem?.moreImage?.split(",").forEach((element)=>{
-  //   images.push({
-
-  //       original: element,
-  //       thumbnail: element,
-
-  //   })
-  // }
-  // )
-
   return (
-    <Fragment>
-      <MainHeader />
-      {/*  */}
-      {/* <ImageGallery items={images} /> */}
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Đánh giá</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <form action="">
-            {/* <input
-                        type="number"
-                        name="star"
-                        id="star"
-                        className="form-control"
-                        placeholder="Số sao"
-                        value={star}
-                        onChange={(e) => setStar(e.target.value)}
-                        required
-                        min="0"
-                        max="5" 
-                      /> */}
-            <ReactStars {...rateStar} />
-            <textarea
-              class="form-control mt-5"
-              id="ratingContent"
-              rows="4"
-              name="ratingContent"
-              value={ratingContent}
-              onChange={(e) => setRatingContent(e.target.value)}
-              required
-            >
-              {ratingContent}
-            </textarea>
-          </form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Hủy
-          </Button>
-          <Button variant="primary" onClick={handleRating}>
-            Gửi
-          </Button>
-        </Modal.Footer>
-      </Modal>
-      {/*  */}
-
-      <section className="padding-y">
-        <div className="container">
-          <div className="row">
-            <aside className="col-lg-6">
-              <article className="gallery-wrap">
-                <div className="img-big-wrap img-thumbnail">
-                  <a data-fslightbox="mygalley" data-type="image" >
-                    <img height={560} src={imageProduct ? imageProduct : findItem.image } />
-                  </a>
-                </div>
-                <div className="thumbs-wrap">
-                <a
-                   data-fslightbox="mygalley"
-                   data-type="image"
-                 
-                   className="item-thumb"
-                   onClick={()=>setImageProduct(findItem.image)}
-                 >
-                   <img width={60} height={60} src={findItem.image} />
-                 </a>
-                {findItem.moreImage?.split(",").map((element)=>
-                   <a
-                   data-fslightbox="mygalley"
-                   data-type="image"
-                 
-                   className="item-thumb"
-                   onClick={()=>setImageProduct(element)}
-                 >
-                   <img width={60} height={60} src={element} />
-                 </a>
-                )}
-               
-                
-                </div>
-                {/* <ImageGallery items={images} originalHeight={"60"} thumbnailHeight={60} /> */}
-              </article>
-            </aside>
-            <main className="col-lg-6">
-              <article className="ps-lg-3">
-                <h4 className="title text-success">{findItem.name}</h4>
-                {/* <div className="rating-wrap my-3">
-            <ul className="rating-stars">
-              <li style={{width: '80%'}} className="stars-active"> <img src="images/misc/stars-active.svg" alt="" /> </li>
-              <li> <img src="images/misc/starts-disable.svg" alt="" /> </li>
-            </ul>
-            <b className="label-rating text-warning"> 4.5</b>
-            <i className="dot" />
-            <span className="label-rating text-muted"> <i className="fa fa-shopping-basket" /> 154 orders </span>
-            <i className="dot" />
-            <span className="label-rating text-success">In stock</span>
-          </div>  */}
-                <div className="mb-3">
-                  <var className="price h5 me-5">
-                    {findItem.promotionPrice} VNĐ
-                  </var>
-                  <del className="price-old">{findItem.unitPrice} VNĐ</del>
-                  {/* <span className="text-muted">/per box</span>  */}
-                </div>
-                <p>{findItem.shortDesc}</p>
-                <dl className="row">
-                  <dt className="col-3">Mã sản phẩm:</dt>
-                  <dd className="col-9">{findItem.code}</dd>
-                  <dt className="col-3">Danh mục:</dt>
-                  <dd className="col-9">{findItem.category?.name}</dd>
-                  <dt className="col-3">Thương hiệu:</dt>
-                  <dd className="col-9">{findItem.brand?.name}</dd>
-                  <dt className="col-3">Số lượng còn</dt>
-                  <dd className="col-9">{findItem.instock} sản phẩm</dd>
-                </dl>
-                <hr />
-                <div className="row mb-4">
-                  {/* <div className="col-md-4 col-6 mb-2">
-              <label className="form-label">Size</label>
-              <select className="form-select">
-                <option>Small</option>
-                <option>Medium</option>
-                <option>Large</option>
-              </select>
-            </div> */}
-                  <div className="col-md-4 col-6 mb-3">
-                    <label className="form-label d-block">Số lượng</label>
-                    <div className="input-group input-spinner">
-                      {amount > 1 ? (
+    <>
+      <Layout>
+        <main className="main">
+          <nav aria-label="breadcrumb" className="breadcrumb-nav border-0 mb-0">
+            <div className="container d-flex align-items-center">
+              <ol className="breadcrumb">
+                <li className="breadcrumb-item">
+                  <a href="index.html">Home</a>
+                </li>
+                <li className="breadcrumb-item">
+                  <a href="#">Products</a>
+                </li>
+                <li className="breadcrumb-item active" aria-current="page">
+                  Default
+                </li>
+              </ol>
+            </div>
+            {/* End .container */}
+          </nav>
+          {/* End .breadcrumb-nav */}
+          <div className="page-content">
+            <div className="container">
+              <div className="product-details-top">
+                <div className="row">
+                  <div className="col-md-6">
+                    <div className="product-gallery product-gallery-vertical">
+                      <div className="row">
+                        <figure className="product-main-image">
+                          <img
+                            id="product-zoom"
+                            src={maniImagePath}
+                            data-zoom-image={maniImagePath}
+                            alt="product image"
+                          />
+                        </figure>
+                        {/* End .product-main-image */}
+                        <div
+                          id="product-zoom-gallery"
+                          className="product-image-gallery"
+                        >
+                          {detailImagePath?.map((element) => {
+                            return (
+                              <a
+                                className="product-gallery-item active"
+                                href="#"
+                                data-image={element.imagePath}
+                                data-zoom-image={element.imagePath}
+                              >
+                                <img
+                                  src={element.imagePath}
+                                  alt="product side"
+                                />
+                              </a>
+                            );
+                          })}
+                        </div>
+                        {/* End .product-image-gallery */}
+                      </div>
+                      {/* End .row */}
+                    </div>
+                    {/* End .product-gallery */}
+                  </div>
+                  {/* End .col-md-6 */}
+                  <div className="col-md-6">
+                    <div className="product-details">
+                      <h1 className="product-title">{findItem.name}</h1>
+                      {/* End .product-title */}
+                      <div className="ratings-container">
+                        <div className="ratings">
+                          <div
+                            className="ratings-val"
+                            style={{ width: "0%" }}
+                          />
+                          {/* End .ratings-val */}
+                        </div>
+                        {/* End .ratings */}
+                        <a
+                          className="ratings-text"
+                          href="#product-review-link"
+                          id="review-link"
+                        >
+                          ( 0 Reviews )
+                        </a>
+                      </div>
+                      {/* End .rating-container */}
+                      <div className="product-price">{findItem.price} VNĐ</div>
+                      {/* End .product-price */}
+                      <div className="product-content">
+                        <p>{findItem.shortDescription}</p>
+                      </div>
+                      {/* End .product-content */}
+                      <div className="details-filter-row details-row-size">
+                        <label htmlFor="qty">Qty:</label>
+                        <div className="product-details-quantity">
+                          <div className="input-group  input-spinner">
+                            {amount > 1 ? (
+                              <div className="input-group-prepend">
+                                <button
+                                  style={{ minWidth: 26 }}
+                                  className="btn btn-decrement btn-spinner"
+                                  type="button"
+                                  onClick={() => decreaseQty()}
+                                >
+                                  <i className="icon-minus" />
+                                </button>
+                              </div>
+                            ) : null}
+                            <input
+                              min={1}
+                              max={10}
+                              step={1}
+                              data-decimals={0}
+                              type="text"
+                              style={{ textAlign: "center" }}
+                              className="form-control "
+                              required=""
+                              placeholder=""
+                              name="amount"
+                              value={amount}
+                              disabled
+                            />
+                            <div className="input-group-append">
+                              <button
+                                style={{ minWidth: 26 }}
+                                className="btn btn-increment btn-spinner"
+                                type="button"
+                                onClick={() => increaseQty()}
+                              >
+                                <i className="icon-plus" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        {/* End .product-details-quantity */}
+                      </div>
+                      {/* End .details-filter-row */}
+                      <div className="product-details-action">
                         <button
-                          value="quantity1"
-                          className="btn btn-icon btn-light"
-                          type="button"
-                          onClick={() => decreaseQty()}
+                          href="#"
+                          className="btn-product btn-cart"
+                          onClick={() => addProductToCart(findItem)}
                         >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width={22}
-                            height={22}
-                            fill="#999"
-                            viewBox="0 0 24 24"
-                          >
-                            <path d="M19 13H5v-2h14v2z" />
-                          </svg>
+                          <span>add to cart</span>
                         </button>
-                      ) : null}
-                      <input
-                        id="quantity1"
-                        name="amount"
-                        className="form-control text-center"
-                        placeholder
-                        value={amount}
-                        disabled
+                      </div>
+                      {/* End .product-details-action */}
+                      <div className="product-details-footer">
+                        <div className="product-cat">
+                          <span>Category:</span>
+                          <a href="#">Women</a>,<a href="#">Dresses</a>,
+                          <a href="#">Yellow</a>
+                        </div>
+                        {/* End .product-cat */}
+                        <div className="social-icons social-icons-sm">
+                          <span className="social-label">Share:</span>
+                          <a
+                            href="#"
+                            className="social-icon"
+                            title="Facebook"
+                            target="_blank"
+                          >
+                            <i className="icon-facebook-f" />
+                          </a>
+                          <a
+                            href="#"
+                            className="social-icon"
+                            title="Twitter"
+                            target="_blank"
+                          >
+                            <i className="icon-twitter" />
+                          </a>
+                          <a
+                            href="#"
+                            className="social-icon"
+                            title="Instagram"
+                            target="_blank"
+                          >
+                            <i className="icon-instagram" />
+                          </a>
+                          <a
+                            href="#"
+                            className="social-icon"
+                            title="Pinterest"
+                            target="_blank"
+                          >
+                            <i className="icon-pinterest" />
+                          </a>
+                        </div>
+                      </div>
+                      {/* End .product-details-footer */}
+                    </div>
+                    {/* End .product-details */}
+                  </div>
+                  {/* End .col-md-6 */}
+                </div>
+                {/* End .row */}
+              </div>
+              {/* End .product-details-top */}
+              <div className="product-details-tab">
+                <ul
+                  className="nav nav-pills justify-content-center"
+                  role="tablist"
+                >
+                  <li className="nav-item">
+                    <a
+                      className="nav-link active"
+                      id="product-desc-link"
+                      data-toggle="tab"
+                      href="#product-desc-tab"
+                      role="tab"
+                      aria-controls="product-desc-tab"
+                      aria-selected="true"
+                    >
+                      Description
+                    </a>
+                  </li>
+                  <li className="nav-item">
+                    <a
+                      className="nav-link"
+                      id="product-info-link"
+                      data-toggle="tab"
+                      href="#product-info-tab"
+                      role="tab"
+                      aria-controls="product-info-tab"
+                      aria-selected="false"
+                    >
+                      Additional information
+                    </a>
+                  </li>
+                  <li className="nav-item">
+                    <a
+                      className="nav-link"
+                      id="product-shipping-link"
+                      data-toggle="tab"
+                      href="#product-shipping-tab"
+                      role="tab"
+                      aria-controls="product-shipping-tab"
+                      aria-selected="false"
+                    >
+                      Shipping &amp; Returns
+                    </a>
+                  </li>
+                  <li className="nav-item">
+                    <a
+                      className="nav-link"
+                      id="product-review-link"
+                      data-toggle="tab"
+                      href="#product-review-tab"
+                      role="tab"
+                      aria-controls="product-review-tab"
+                      aria-selected="false"
+                    >
+                      Reviews (2)
+                    </a>
+                  </li>
+                </ul>
+                <div className="tab-content">
+                  <div
+                    className="tab-pane fade show active"
+                    id="product-desc-tab"
+                    role="tabpanel"
+                    aria-labelledby="product-desc-link"
+                  >
+                    <div className="product-desc-content">
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: findItem.description,
+                        }}
                       />
-                      <button
-                        value="quantity1"
-                        className="btn btn-icon btn-light"
-                        type="button"
-                        onClick={() => increaseQty()}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width={22}
-                          height={22}
-                          fill="#999"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-                        </svg>
-                      </button>
+                    </div>
+                    {/* End .product-desc-content */}
+                  </div>
+                  {/* .End .tab-pane */}
+                  <div
+                    className="tab-pane fade"
+                    id="product-info-tab"
+                    role="tabpanel"
+                    aria-labelledby="product-info-link"
+                  >
+                    <div className="product-desc-content">
+                      <h3>Information</h3>
+                      <p>
+                        Lorem ipsum dolor sit amet, consectetuer adipiscing
+                        elit. Donec odio. Quisque volutpat mattis eros. Nullam
+                        malesuada erat ut turpis. Suspendisse urna viverra non,
+                        semper suscipit, posuere a, pede. Donec nec justo eget
+                        felis facilisis fermentum. Aliquam porttitor mauris sit
+                        amet orci.{" "}
+                      </p>
+                      <h3>Fabric &amp; care</h3>
+                      <ul>
+                        <li>Faux suede fabric</li>
+                        <li>Gold tone metal hoop handles.</li>
+                        <li>RI branding</li>
+                        <li>Snake print trim interior </li>
+                        <li>Adjustable cross body strap</li>
+                        <li>
+                          {" "}
+                          Height: 31cm; Width: 32cm; Depth: 12cm; Handle Drop:
+                          61cm
+                        </li>
+                      </ul>
+                      <h3>Size</h3>
+                      <p>one size</p>
+                    </div>
+                    {/* End .product-desc-content */}
+                  </div>
+                  {/* .End .tab-pane */}
+                  <div
+                    className="tab-pane fade"
+                    id="product-shipping-tab"
+                    role="tabpanel"
+                    aria-labelledby="product-shipping-link"
+                  >
+                    <div className="product-desc-content">
+                      <h3>Delivery &amp; returns</h3>
+                      <p>
+                        We deliver to over 100 countries around the world. For
+                        full details of the delivery options we offer, please
+                        view our <a href="#">Delivery information</a>
+                        <br />
+                        We hope you’ll love every purchase, but if you ever need
+                        to return an item you can do so within a month of
+                        receipt. For full details of how to make a return,
+                        please view our <a href="#">Returns information</a>
+                      </p>
+                    </div>
+                    {/* End .product-desc-content */}
+                  </div>
+                  {/* .End .tab-pane */}
+                  <div
+                    className="tab-pane fade"
+                    id="product-review-tab"
+                    role="tabpanel"
+                    aria-labelledby="product-review-link"
+                  >
+                    <div className="reviews">
+                      <h3>Reviews (2)</h3>
+                      <div className="review">
+                        <div className="row no-gutters">
+                          <div className="col-auto">
+                            <h4>
+                              <a href="#">Samanta J.</a>
+                            </h4>
+                            <div className="ratings-container">
+                              <div className="ratings">
+                                <div
+                                  className="ratings-val"
+                                  style={{ width: "80%" }}
+                                />
+                                {/* End .ratings-val */}
+                              </div>
+                              {/* End .ratings */}
+                            </div>
+                            {/* End .rating-container */}
+                            <span className="review-date">6 days ago</span>
+                          </div>
+                          {/* End .col */}
+                          <div className="col">
+                            <h4>Good, perfect size</h4>
+                            <div className="review-content">
+                              <p>
+                                Lorem ipsum dolor sit amet, consectetur
+                                adipisicing elit. Ducimus cum dolores assumenda
+                                asperiores facilis porro reprehenderit animi
+                                culpa atque blanditiis commodi perspiciatis
+                                doloremque, possimus, explicabo, autem fugit
+                                beatae quae voluptas!
+                              </p>
+                            </div>
+                            {/* End .review-content */}
+                            <div className="review-action">
+                              <a href="#">
+                                <i className="icon-thumbs-up" />
+                                Helpful (2)
+                              </a>
+                              <a href="#">
+                                <i className="icon-thumbs-down" />
+                                Unhelpful (0)
+                              </a>
+                            </div>
+                            {/* End .review-action */}
+                          </div>
+                          {/* End .col-auto */}
+                        </div>
+                        {/* End .row */}
+                      </div>
+                      {/* End .review */}
+                      <div className="review">
+                        <div className="row no-gutters">
+                          <div className="col-auto">
+                            <h4>
+                              <a href="#">John Doe</a>
+                            </h4>
+                            <div className="ratings-container">
+                              <div className="ratings">
+                                <div
+                                  className="ratings-val"
+                                  style={{ width: "100%" }}
+                                />
+                                {/* End .ratings-val */}
+                              </div>
+                              {/* End .ratings */}
+                            </div>
+                            {/* End .rating-container */}
+                            <span className="review-date">5 days ago</span>
+                          </div>
+                          {/* End .col */}
+                          <div className="col">
+                            <h4>Very good</h4>
+                            <div className="review-content">
+                              <p>
+                                Sed, molestias, tempore? Ex dolor esse iure hic
+                                veniam laborum blanditiis laudantium iste amet.
+                                Cum non voluptate eos enim, ab cumque nam, modi,
+                                quas iure illum repellendus, blanditiis
+                                perspiciatis beatae!
+                              </p>
+                            </div>
+                            {/* End .review-content */}
+                            <div className="review-action">
+                              <a href="#">
+                                <i className="icon-thumbs-up" />
+                                Helpful (0)
+                              </a>
+                              <a href="#">
+                                <i className="icon-thumbs-down" />
+                                Unhelpful (0)
+                              </a>
+                            </div>
+                            {/* End .review-action */}
+                          </div>
+                          {/* End .col-auto */}
+                        </div>
+                        {/* End .row */}
+                      </div>
+                      {/* End .review */}
+                    </div>
+                    {/* End .reviews */}
+                  </div>
+                  {/* .End .tab-pane */}
+                </div>
+                {/* End .tab-content */}
+              </div>
+              {/* End .product-details-tab */}
+              <h2 className="title text-center mb-4">You May Also Like</h2>
+              {/* End .title text-center */}
+              <div
+                className="owl-carousel owl-simple carousel-equal-height carousel-with-shadow owl-loaded owl-drag"
+                data-toggle="owl"
+                data-owl-options='{
+                      "nav": false, 
+                      "dots": true,
+                      "margin": 20,
+                      "loop": false,
+                      "responsive": {
+                          "0": {
+                              "items":1
+                          },
+                          "480": {
+                              "items":2
+                          },
+                          "768": {
+                              "items":3
+                          },
+                          "992": {
+                              "items":4
+                          },
+                          "1200": {
+                              "items":4,
+                              "nav": true,
+                              "dots": false
+                          }
+                      }
+                  }'
+              >
+                {/* End .product */}
+                {/* End .product */}
+                {/* End .product */}
+                {/* End .product */}
+                {/* End .product */}
+                <div className="owl-stage-outer">
+                  <div
+                    className="owl-stage"
+                    style={{
+                      transform: "translate3d(-297px, 0px, 0px)",
+                      transition: "all 0.4s ease 0s",
+                      width: 1485,
+                    }}
+                  >
+                    <div
+                      className="owl-item"
+                      style={{ width: 277, marginRight: 20 }}
+                    >
+                      <div className="product product-7 text-center">
+                        <figure className="product-media">
+                          <span className="product-label label-new">New</span>
+                          <a href="product.html">
+                            <img
+                              src="assets/images/products/product-4.jpg"
+                              alt="Product image"
+                              className="product-image"
+                            />
+                          </a>
+                          <div className="product-action-vertical">
+                            <a
+                              href="#"
+                              className="btn-product-icon btn-wishlist btn-expandable"
+                            >
+                              <span>add to wishlist</span>
+                            </a>
+                            <a
+                              href="popup/quickView.html"
+                              className="btn-product-icon btn-quickview"
+                              title="Quick view"
+                            >
+                              <span>Quick view</span>
+                            </a>
+                            <a
+                              href="#"
+                              className="btn-product-icon btn-compare"
+                              title="Compare"
+                            >
+                              <span>Compare</span>
+                            </a>
+                          </div>
+                          {/* End .product-action-vertical */}
+                          <div className="product-action">
+                            <a href="#" className="btn-product btn-cart">
+                              <span>add to cart</span>
+                            </a>
+                          </div>
+                          {/* End .product-action */}
+                        </figure>
+                        {/* End .product-media */}
+                        <div className="product-body">
+                          <div className="product-cat">
+                            <a href="#">Women</a>
+                          </div>
+                          {/* End .product-cat */}
+                          <h3 className="product-title">
+                            <a href="product.html">
+                              Brown paperbag waist <br />
+                              pencil skirt
+                            </a>
+                          </h3>
+                          {/* End .product-title */}
+                          <div className="product-price">$60.00</div>
+                          {/* End .product-price */}
+                          <div className="ratings-container">
+                            <div className="ratings">
+                              <div
+                                className="ratings-val"
+                                style={{ width: "20%" }}
+                              />
+                              {/* End .ratings-val */}
+                            </div>
+                            {/* End .ratings */}
+                            <span className="ratings-text">( 2 Reviews )</span>
+                          </div>
+                          {/* End .rating-container */}
+                          <div className="product-nav product-nav-thumbs">
+                            <a href="#" className="active">
+                              <img
+                                src="assets/images/products/product-4-thumb.jpg"
+                                alt="product desc"
+                              />
+                            </a>
+                            <a href="#">
+                              <img
+                                src="assets/images/products/product-4-2-thumb.jpg"
+                                alt="product desc"
+                              />
+                            </a>
+                            <a href="#">
+                              <img
+                                src="assets/images/products/product-4-3-thumb.jpg"
+                                alt="product desc"
+                              />
+                            </a>
+                          </div>
+                          {/* End .product-nav */}
+                        </div>
+                        {/* End .product-body */}
+                      </div>
+                    </div>
+                    <div
+                      className="owl-item active"
+                      style={{ width: 277, marginRight: 20 }}
+                    >
+                      <div className="product product-7 text-center">
+                        <figure className="product-media">
+                          <span className="product-label label-out">
+                            Out of Stock
+                          </span>
+                          <a href="product.html">
+                            <img
+                              src="assets/images/products/product-6.jpg"
+                              alt="Product image"
+                              className="product-image"
+                            />
+                          </a>
+                          <div className="product-action-vertical">
+                            <a
+                              href="#"
+                              className="btn-product-icon btn-wishlist btn-expandable"
+                            >
+                              <span>add to wishlist</span>
+                            </a>
+                            <a
+                              href="popup/quickView.html"
+                              className="btn-product-icon btn-quickview"
+                              title="Quick view"
+                            >
+                              <span>Quick view</span>
+                            </a>
+                            <a
+                              href="#"
+                              className="btn-product-icon btn-compare"
+                              title="Compare"
+                            >
+                              <span>Compare</span>
+                            </a>
+                          </div>
+                          {/* End .product-action-vertical */}
+                          <div className="product-action">
+                            <a href="#" className="btn-product btn-cart">
+                              <span>add to cart</span>
+                            </a>
+                          </div>
+                          {/* End .product-action */}
+                        </figure>
+                        {/* End .product-media */}
+                        <div className="product-body">
+                          <div className="product-cat">
+                            <a href="#">Jackets</a>
+                          </div>
+                          {/* End .product-cat */}
+                          <h3 className="product-title">
+                            <a href="product.html">
+                              Khaki utility boiler jumpsuit
+                            </a>
+                          </h3>
+                          {/* End .product-title */}
+                          <div className="product-price">
+                            <span className="out-price">$120.00</span>
+                          </div>
+                          {/* End .product-price */}
+                          <div className="ratings-container">
+                            <div className="ratings">
+                              <div
+                                className="ratings-val"
+                                style={{ width: "80%" }}
+                              />
+                              {/* End .ratings-val */}
+                            </div>
+                            {/* End .ratings */}
+                            <span className="ratings-text">( 6 Reviews )</span>
+                          </div>
+                          {/* End .rating-container */}
+                        </div>
+                        {/* End .product-body */}
+                      </div>
+                    </div>
+                    <div
+                      className="owl-item active"
+                      style={{ width: 277, marginRight: 20 }}
+                    >
+                      <div className="product product-7 text-center">
+                        <figure className="product-media">
+                          <span className="product-label label-top">Top</span>
+                          <a href="product.html">
+                            <img
+                              src="assets/images/products/product-11.jpg"
+                              alt="Product image"
+                              className="product-image"
+                            />
+                          </a>
+                          <div className="product-action-vertical">
+                            <a
+                              href="#"
+                              className="btn-product-icon btn-wishlist btn-expandable"
+                            >
+                              <span>add to wishlist</span>
+                            </a>
+                            <a
+                              href="popup/quickView.html"
+                              className="btn-product-icon btn-quickview"
+                              title="Quick view"
+                            >
+                              <span>Quick view</span>
+                            </a>
+                            <a
+                              href="#"
+                              className="btn-product-icon btn-compare"
+                              title="Compare"
+                            >
+                              <span>Compare</span>
+                            </a>
+                          </div>
+                          {/* End .product-action-vertical */}
+                          <div className="product-action">
+                            <a href="#" className="btn-product btn-cart">
+                              <span>add to cart</span>
+                            </a>
+                          </div>
+                          {/* End .product-action */}
+                        </figure>
+                        {/* End .product-media */}
+                        <div className="product-body">
+                          <div className="product-cat">
+                            <a href="#">Shoes</a>
+                          </div>
+                          {/* End .product-cat */}
+                          <h3 className="product-title">
+                            <a href="product.html">
+                              Light brown studded Wide fit wedges
+                            </a>
+                          </h3>
+                          {/* End .product-title */}
+                          <div className="product-price">$110.00</div>
+                          {/* End .product-price */}
+                          <div className="ratings-container">
+                            <div className="ratings">
+                              <div
+                                className="ratings-val"
+                                style={{ width: "80%" }}
+                              />
+                              {/* End .ratings-val */}
+                            </div>
+                            {/* End .ratings */}
+                            <span className="ratings-text">( 1 Reviews )</span>
+                          </div>
+                          {/* End .rating-container */}
+                          <div className="product-nav product-nav-thumbs">
+                            <a href="#" className="active">
+                              <img
+                                src="assets/images/products/product-11-thumb.jpg"
+                                alt="product desc"
+                              />
+                            </a>
+                            <a href="#">
+                              <img
+                                src="assets/images/products/product-11-2-thumb.jpg"
+                                alt="product desc"
+                              />
+                            </a>
+                            <a href="#">
+                              <img
+                                src="assets/images/products/product-11-3-thumb.jpg"
+                                alt="product desc"
+                              />
+                            </a>
+                          </div>
+                          {/* End .product-nav */}
+                        </div>
+                        {/* End .product-body */}
+                      </div>
+                    </div>
+                    <div
+                      className="owl-item active"
+                      style={{ width: 277, marginRight: 20 }}
+                    >
+                      <div className="product product-7 text-center">
+                        <figure className="product-media">
+                          <a href="product.html">
+                            <img
+                              src="assets/images/products/product-10.jpg"
+                              alt="Product image"
+                              className="product-image"
+                            />
+                          </a>
+                          <div className="product-action-vertical">
+                            <a
+                              href="#"
+                              className="btn-product-icon btn-wishlist btn-expandable"
+                            >
+                              <span>add to wishlist</span>
+                            </a>
+                            <a
+                              href="popup/quickView.html"
+                              className="btn-product-icon btn-quickview"
+                              title="Quick view"
+                            >
+                              <span>Quick view</span>
+                            </a>
+                            <a
+                              href="#"
+                              className="btn-product-icon btn-compare"
+                              title="Compare"
+                            >
+                              <span>Compare</span>
+                            </a>
+                          </div>
+                          {/* End .product-action-vertical */}
+                          <div className="product-action">
+                            <a href="#" className="btn-product btn-cart">
+                              <span>add to cart</span>
+                            </a>
+                          </div>
+                          {/* End .product-action */}
+                        </figure>
+                        {/* End .product-media */}
+                        <div className="product-body">
+                          <div className="product-cat">
+                            <a href="#">Jumpers</a>
+                          </div>
+                          {/* End .product-cat */}
+                          <h3 className="product-title">
+                            <a href="product.html">
+                              Yellow button front tea top
+                            </a>
+                          </h3>
+                          {/* End .product-title */}
+                          <div className="product-price">$56.00</div>
+                          {/* End .product-price */}
+                          <div className="ratings-container">
+                            <div className="ratings">
+                              <div
+                                className="ratings-val"
+                                style={{ width: "0%" }}
+                              />
+                              {/* End .ratings-val */}
+                            </div>
+                            {/* End .ratings */}
+                            <span className="ratings-text">( 0 Reviews )</span>
+                          </div>
+                          {/* End .rating-container */}
+                        </div>
+                        {/* End .product-body */}
+                      </div>
+                    </div>
+                    <div
+                      className="owl-item active"
+                      style={{ width: 277, marginRight: 20 }}
+                    >
+                      <div className="product product-7 text-center">
+                        <figure className="product-media">
+                          <a href="product.html">
+                            <img
+                              src="assets/images/products/product-7.jpg"
+                              alt="Product image"
+                              className="product-image"
+                            />
+                          </a>
+                          <div className="product-action-vertical">
+                            <a
+                              href="#"
+                              className="btn-product-icon btn-wishlist btn-expandable"
+                            >
+                              <span>add to wishlist</span>
+                            </a>
+                            <a
+                              href="popup/quickView.html"
+                              className="btn-product-icon btn-quickview"
+                              title="Quick view"
+                            >
+                              <span>Quick view</span>
+                            </a>
+                            <a
+                              href="#"
+                              className="btn-product-icon btn-compare"
+                              title="Compare"
+                            >
+                              <span>Compare</span>
+                            </a>
+                          </div>
+                          {/* End .product-action-vertical */}
+                          <div className="product-action">
+                            <a href="#" className="btn-product btn-cart">
+                              <span>add to cart</span>
+                            </a>
+                          </div>
+                          {/* End .product-action */}
+                        </figure>
+                        {/* End .product-media */}
+                        <div className="product-body">
+                          <div className="product-cat">
+                            <a href="#">Jeans</a>
+                          </div>
+                          {/* End .product-cat */}
+                          <h3 className="product-title">
+                            <a href="product.html">
+                              Blue utility pinafore denim dress
+                            </a>
+                          </h3>
+                          {/* End .product-title */}
+                          <div className="product-price">$76.00</div>
+                          {/* End .product-price */}
+                          <div className="ratings-container">
+                            <div className="ratings">
+                              <div
+                                className="ratings-val"
+                                style={{ width: "20%" }}
+                              />
+                              {/* End .ratings-val */}
+                            </div>
+                            {/* End .ratings */}
+                            <span className="ratings-text">( 2 Reviews )</span>
+                          </div>
+                          {/* End .rating-container */}
+                        </div>
+                        {/* End .product-body */}
+                      </div>
                     </div>
                   </div>
                 </div>
-
-                <button
-                  className="btn  btn-primary me-2"
-                  onClick={() => addProductToCart(findItem)}
-                >
-                  <i className="me-1 fa fa-shopping-basket" /> Thêm vào giỏ
-                </button>
-                <button
-                  className="btn  btn-light"
-                  onClick={() => AddToWishList(findItem)}
-                >
-                  <i className="me-1 fa fa-heart" /> Thích
-                </button>
-              </article>
-            </main>
-          </div>
-        </div>
-      </section>
-      <section className="padding-y bg-light border-top">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="card">
-                <header className="card-header">
-                  <ul className="nav nav-tabs card-header-tabs">
-                    <li className="nav-item">
-                      <a
-                        href="#"
-                        data-bs-target="#tab_specs"
-                        data-bs-toggle="tab"
-                        className="nav-link active"
-                      >
-                        Mô tả
-                      </a>
-                    </li>
-                    <li className="nav-item">
-                      <a
-                        href="#"
-                        data-bs-target="#tab_warranty"
-                        data-bs-toggle="tab"
-                        className="nav-link"
-                      >
-                        Thông số
-                      </a>
-                    </li>
-                    <li className="nav-item">
-                      <a
-                        href="#"
-                        data-bs-target="#tab_shipping"
-                        data-bs-toggle="tab"
-                        className="nav-link"
-                      >
-                        Đánh giá
-                      </a>
-                    </li>
-                    {/* <li className="nav-item">
-                <a href="#" data-bs-target="#tab_seller" data-bs-toggle="tab" className="nav-link">Seller profile</a>
-              </li> */}
-                  </ul>
-                </header>
-                <div className="tab-content">
-                  <article
-                    id="tab_specs"
-                    className="tab-pane show active card-body"
+                <div className="owl-nav">
+                  <button
+                    type="button"
+                    role="presentation"
+                    className="owl-prev"
                   >
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: findItem.description,
-                      }}
-                    />
-                  </article>
-                  <article id="tab_warranty" className="tab-pane card-body">
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: findItem.specification,
-                      }}
-                    />
-                  </article>
-                  <article id="tab_shipping" className="tab-pane card-body">
-                    <div className="card-body">
-                      <h5 className="card-title">
-                        Reviews
-                        <button
-                          href="#"
-                          className="btn  btn-primary-light float-end"
-                          onClick={handleShow}
-                        >
-                          Viết đánh giá
-                        </button>
-                      </h5>
-
-                      <hr />
-                      {listRating.map((element) => (
-                        <blockquote className="border-bottom">
-                          <div className="float-lg-end d-flex mb-3">
-                            <div className="btn-group d-inline-flex me-2">
-                              {/* <button
-                                        className="btn btn-light btn-sm float-end"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-title="Like"
-                                      >
-                                        <i className="fa fa-thumbs-up" />
-                                      </button>
-                                      <button
-                                        className="btn btn-light btn-sm float-end"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-title="Dislike"
-                                      >
-                                        <i className="fa fa-thumbs-down" />
-                                      </button> */}
-                            </div>
-                            <button className="btn btn-light btn-sm float-end ">
-                              <i className="fa fa-ellipsis-v" />
-                            </button>
-                          </div>
-                          <div className="icontext">
-                            <img
-                              src="/avartar user.jpg"
-                              className="img-xs icon rounded-circle"
-                            />
-                            <div className="text">
-                              <h6 className="mb-0">
-                                {element.user.firstName}  {element.user.lastName}
-                              </h6>
-                              <div className="rating-wrap">
-                                <ul className="rating-stars">
-                                  <li
-                                    style={{ width: `${element.star * 20}%` }}
-                                    className="stars-active"
-                                  >
-                                    <img
-                                      src="https://bootstrap-ecommerce.com/bootstrap5-ecommerce/images/misc/stars-active.svg"
-                                      alt=""
-                                    />
-                                  </li>
-                                  <li>
-                                    <img
-                                      src="	https://bootstrap-ecommerce.com/bootstrap5-ecommerce/images/misc/starts-disable.svg"
-                                      alt=""
-                                    />
-                                  </li>
-                                </ul>
-                                {/* <b className="dot" /> */}
-                                <small className="label-rating text-muted ms-2">
-                                  Đánh giá lúc :
-                                  <Moment format="YYYY/MM/DD HH:mm">
-                                    {element.createdAt}
-                                  </Moment>
-                                </small>
-                              </div>
-                            </div>
-                          </div>
-                          {/* icontext.// */}
-                          <div className="mt-3">
-                            <p>{element.content}</p>
-                          </div>
-                        </blockquote>
-                      ))}
-                    </div>
-                  </article>
-                  {/* <article id="tab_seller" className="tab-pane card-body">
-              Some other tab content  or sample information now <br />
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-              tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-              quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-              consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-              cillum dolore eu fugiat nulla pariatur.  Excepteur sint occaecat cupidatat non
-              proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-            </article> */}
+                    <i className="icon-angle-left" />
+                  </button>
+                  <button
+                    type="button"
+                    role="presentation"
+                    className="owl-next disabled"
+                  >
+                    <i className="icon-angle-right" />
+                  </button>
                 </div>
+                <div className="owl-dots disabled" />
               </div>
+              {/* End .owl-carousel */}
             </div>
-            {/*                       
-                      <aside className="col-lg-4">
-                        <div className="card">
-                          <div className="card-body">
-                            <h5 className="card-title">Similar items</h5>
-                            <article className="itemside mb-3">
-                              <a href="#" className="aside">
-                                <img
-                                  src="images/items/8.jpg"
-                                  width={96}
-                                  height={96}
-                                  className="img-md img-thumbnail"
-                                />
-                              </a>
-                              <div className="info">
-                                <a href="#" className="title mb-1">
-                                  Rucksack Backpack Large <br /> Line Mounts
-                                </a>
-                                <strong className="price"> $38.90</strong>
-                              </div>
-                            </article>
-                            <article className="itemside mb-3">
-                              <a href="#" className="aside">
-                                <img
-                                  src="images/items/9.jpg"
-                                  width={96}
-                                  height={96}
-                                  className="img-md img-thumbnail"
-                                />
-                              </a>
-                              <div className="info">
-                                <a href="#" className="title mb-1">
-                                  Summer New Men's Denim <br /> Jeans Shorts
-                                </a>
-                                <strong className="price"> $29.50</strong>
-                              </div>
-                            </article>
-                            <article className="itemside mb-3">
-                              <a href="#" className="aside">
-                                <img
-                                  src="images/items/10.jpg"
-                                  width={96}
-                                  height={96}
-                                  className="img-md img-thumbnail"
-                                />
-                              </a>
-                              <div className="info">
-                                <a href="#" className="title mb-1">
-                                  T-shirts with multiple colors, for men and
-                                  lady
-                                </a>
-                                <strong className="price"> $120.00</strong>
-                              </div>
-                            </article>
-                            <article className="itemside mb-3">
-                              <a href="#" className="aside">
-                                <img
-                                  src="images/items/11.jpg"
-                                  width={96}
-                                  height={96}
-                                  className="img-md img-thumbnail"
-                                />
-                              </a>
-                              <div className="info">
-                                <a href="#" className="title mb-1">
-                                  Blazer Suit Dress Jacket for Men, Blue color
-                                </a>
-                                <strong className="price"> $339.90</strong>
-                              </div>
-                            </article>
-                          </div>
-                        </div>
-                      </aside> */}
-
-            <br />
-            <br />
+            {/* End .container */}
           </div>
-        </div>
-      </section>
-
-      <MainFooter />
-    </Fragment>
+          {/* End .page-content */}
+        </main>
+      </Layout>
+    </>
   );
 };
-
 
 export default Product_Page;

@@ -1,239 +1,382 @@
+import axios from "axios";
 import React, { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { changeInformation, logout } from "../../actions";
+import { changeInformation } from "../../actions";
 import Main_Footer from "../../layouts/footer";
 import Main_Header from "../../layouts/header";
 
 const Profile = () => {
-
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
 
   // const [username, setUsername] = useState("");
-  const [firstName , setFirstName] = useState("");
-  const [lastName , setLastName] = useState("");
-  const [email,setEmail] = useState("");
-  const [phone , setPhone] = useState("");
-  const [address , setAddress] = useState("");
-
+  const [nameReceiver, setNameReceiver] = useState("");
+  const [addressReceiver, setAddressReceiver] = useState("");
+  const [emailReceiver, setEmailReceiver] = useState("");
+  const [phoneReceiver, setPhoneReceiver] = useState("");
 
   useEffect(() => {
-    if(user){
-      setFirstName(user.firstName);
-      setLastName(user.lastName);
-      setEmail(user.email);
-      setPhone(user.phone);
-      setAddress(user.address)
+    if (user) {
+      setNameReceiver(user.name);
+      setAddressReceiver(user.address);
+      setEmailReceiver(user.email);
+      setPhoneReceiver(user.phone);
     }
   }, [user]);
-
 
   const updateUser = (e) => {
     e.preventDefault();
     const send = {
-      firstName,
-      lastName,
-      phone,
-      address,
+      name: nameReceiver,
+      email: emailReceiver,
+      phone: phoneReceiver,
+      address:
+        selectedProvince.name +
+        ";" +
+        selectedDistrict.name +
+        ";" +
+        selectedCommune.name +
+        ";" +
+        homeNumber,
     };
 
     console.log(send);
-    dispatch(changeInformation(+user.id,send));
+    dispatch(changeInformation(+user.id, send));
   };
+
+  /////////////// render địa chỉ theo tỉnh thành, quận huyện, xã
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [communes, setCommunes] = useState([]);
+
+  const [selectedProvince, setSelectedProvince] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [selectedCommune, setSelectedCommune] = useState("");
+  const [homeNumber, setHomeNumber] = useState("");
+
+  useEffect(() => {
+    // Gọi API để lấy danh sách tỉnh/thành phố
+    const fetchProvinces = async () => {
+      try {
+        const response = await axios.get(
+          "https://provinces.open-api.vn/api/?depth=2"
+        );
+        setProvinces(response.data);
+      } catch (error) {
+        console.error("Error fetching provinces:", error);
+      }
+    };
+
+    fetchProvinces();
+  }, []); // Chỉ gọi API khi component được mount
+
+  useEffect(() => {
+    // Gọi API để lấy danh sách huyện/quận khi tỉnh được chọn
+    const fetchDistricts = async () => {
+      try {
+        if (selectedProvince) {
+          const response = await axios.get(
+            `https://provinces.open-api.vn/api/p/${selectedProvince.code}?depth=2`
+          );
+          setDistricts(response.data.districts);
+          console.log("districts" + response);
+        }
+      } catch (error) {
+        console.error("Error fetching districts:", error);
+      }
+    };
+
+    fetchDistricts();
+  }, [selectedProvince]); // Gọi API khi selectedProvince thay đổi
+
+  useEffect(() => {
+    // Gọi API để lấy danh sách xã/phường khi huyện được chọn
+    const fetchCommunes = async () => {
+      try {
+        if (selectedDistrict) {
+          const response = await axios.get(
+            `https://provinces.open-api.vn/api/d/${selectedDistrict.code}?depth=2`
+          );
+          setCommunes(response.data.wards);
+          console.log("wards" + response);
+        }
+      } catch (error) {
+        console.error("Error fetching communes:", error);
+      }
+    };
+
+    fetchCommunes();
+  }, [selectedDistrict]); // Gọi API khi selectedDistrict thay đổi
+
   return (
     <Fragment>
-      {/* //Header Style One */}
       <Main_Header />
-      {/* Profile Content */}
-      <div className="container py-5">
-        <div className="row">
-          <aside className="col-lg-3">
-            {/* COMPONENT MENU LIST */}
-            <div className="card p-3 h-100">
-              <nav className="nav flex-column nav-pills">
-              <Link to="/profile" className="nav-link active" href="#">
-                  Cá nhân
-                </Link>
-                <Link className="nav-link" href="#" to="/orders">
-                  Đơn hàng đã đặt
-                </Link>
-                <Link className="nav-link" href="#" to="/wishlist">
-                  Sản phẩm yêu thích
-                </Link>
-                <Link to="/Change_Password" className="nav-link" href="#">
-                  Đổi mật khẩu
-                </Link>
-                <a className="nav-link" href="#" onClick={()=>dispatch(logout())}>
-                  Đăng xuất
-                </a>
-                
-              </nav>
-            </div>
-            {/* COMPONENT MENU LIST END .// */}
-          </aside>
-          <div className="col-lg-9">
-            <article className="card">
-              <div className="card-body">
-                <form>
-                  <div className="row">
-                    <div className="col-lg-12">
-                      <div className="row gx-3">
-                        <div className="col-6 mb-3">
-                        <label className="form-label">
-                        Họ
-                      </label>
-                      <input
-                        type="text"
-                        name="firstName"
-                        className="form-control"
-                        placeholder=""
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        required
-                      />
-                        </div>
-                        {/* col .// */}
-                        <div className="col-6 mb-3">
-                        <label className="form-label">
-                        Tên
-                      </label>
-                      <input
-                        type="text"
-                        name="lastName"
-                        className="form-control"
-                        placeholder=""
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        required
-                      />
-                        </div>
-                        {/* col .// */}
-                        <div className="col-lg-6 col-md-6 mb-3">
-                        <label className="form-label">
-                        Email
-                      </label>
-                      <input
-                        type="email"
-                        name="email"
-                        className="form-control"
-                        placeholder=""
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        disabled
-                      />
-                        </div>
-                        {/* col .// */}
-                        <div className="col-lg-6 col-md-6 mb-3">
-                        <label className="form-label">
-                        Số điện thoại
-                      </label>
-                      <input
-                        type="number"
-                        name="phone"
-                        className="form-control"
-                        placeholder=""
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        required
-                      />
-                        </div>
-                        {/* col .// */}
-                        <div className="col-lg-12 mb-3">
-                        <label className="form-label">
-                        Địa chỉ
-                      </label>
-                      <input
-                        type="text"
-                        name="address"
-                        className="form-control"
-                        placeholder=""
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                        // required
-                      />
-                        </div>
-                        {/* col .// */}
-                        {/* <div className="col-lg-6 col-6 mb-3">
-                          <label className="form-label">Birthday</label>
-                          <input className="form-control" type="date" />
-                        </div> */}
-                        {/* col .// */}
-                      </div>
-                      {/* row.// */}
-                    </div>
-                    {/* col.// */}
-                    {/* <aside className="col-lg-4">
-                      <div className="text-lg-center mt-3">
-                        <img
-                          className="img-lg mb-3 img-avatar"
-                          src="bootstrap5-ecommerce/images/avatars/avatar1.jpg"
-                          alt="User Photo"
-                        />
-                        <div>
-                          <a className="btn btn-sm btn-light" href="#">
-                            <i className="fa fa-camera" /> Upload
-                          </a>
-                          <a className="btn btn-sm btn-outline-danger" href="#">
-                            <i className="fa fa-trash" />
-                          </a>
-                        </div>
-                      </div>
-                    </aside> */}
-                    {/* col.// */}
-                  </div>
-                  {/* row.// */} <br />
-                  <button className="btn btn-primary" type="submit" onClick={updateUser}>
-                    Lưu thay đổi
-                  </button>
-                </form>
-                {/* <hr className="my-4" />
-                <div className="row" style={{ maxWidth: "920px" }}>
-                  <div className="col-md">
-                    <article className="box mb-3 bg-light">
-                      <a className="btn float-end btn-light btn-sm" href="#">
-                        Change
-                      </a>
-                      <p className="title mb-0">Password</p>
-                      <small
-                        className="text-muted d-block"
-                        style={{ width: "70%" }}
-                      >
-                        You can reset or change your password by clicking here
-                      </small>
-                    </article>
-                  </div>
-                  <div className="col-md">
-                    <article className="box mb-3 bg-light">
-                      <a
-                        className="btn float-end btn-outline-danger btn-sm"
-                        href="#"
-                      >
-                        Deactivate
-                      </a>
-                      <p className="title mb-0">Remove account</p>
-                      <small
-                        className="text-muted d-block"
-                        style={{ width: "70%" }}
-                      >
-                        Once you delete your account, there is no going back.
-                      </small>
-                    </article>
-                  </div>
-                 
-                </div> */}
-                {/* row.// */}
-              </div>
-              {/* card-body .// */}
-            </article>
-            {/* card .// */}
+      <main className="main">
+        <div
+          className="page-header text-center"
+          style={{ backgroundImage: 'url("assets/images/page-header-bg.jpg")' }}
+        >
+          <div className="container">
+            <h1 className="page-title">
+              My Account<span>Shop</span>
+            </h1>
           </div>
+          {/* End .container */}
         </div>
-      </div>
+        {/* End .page-header */}
+        <nav aria-label="breadcrumb" className="breadcrumb-nav mb-3">
+          <div className="container">
+            <ol className="breadcrumb">
+              <li className="breadcrumb-item">
+                <a href="index.html">Home</a>
+              </li>
+              <li className="breadcrumb-item">
+                <a href="#">Shop</a>
+              </li>
+              <li className="breadcrumb-item active" aria-current="page">
+                My Account
+              </li>
+            </ol>
+          </div>
+          {/* End .container */}
+        </nav>
+        {/* End .breadcrumb-nav */}
+        <div className="page-content">
+          <div className="dashboard">
+            <div className="container">
+              <div className="row">
+                <aside className="col-md-4 col-lg-3">
+                  <ul
+                    className="nav nav-dashboard flex-column mb-3 mb-md-0"
+                    role="tablist"
+                  >
+                    <li className="nav-item">
+                      <Link
+                        className="nav-link"
+                        id="tab-dashboard-link"
+                        data-toggle="tab"
+                        role="tab"
+                        aria-controls="tab-dashboard"
+                        aria-selected="false"
+                        to="/profile"
+                      >
+                        Thông tin tài khoản
+                      </Link>
+                    </li>
+                    <li className="nav-item">
+                      <Link
+                        className="nav-link"
+                        id="tab-orders-link"
+                        data-toggle="tab"
+                        role="tab"
+                        aria-controls="tab-orders"
+                        aria-selected="false"
+                        to="/orders"
+                      >
+                        Đơn hàng đã đặt
+                      </Link>
+                    </li>
+                    <li className="nav-item">
+                      <Link
+                        className="nav-link"
+                        id="tab-downloads-link"
+                        data-toggle="tab"
+                        to="/change-password"
+                        role="tab"
+                        aria-controls="tab-downloads"
+                        aria-selected="false"
+                      >
+                        Đổi mật khẩu
+                      </Link>
+                    </li>
+
+                    {/* <li className="nav-item">
+                <a className="nav-link" href="#">
+                  Sign Out
+                </a>
+              </li> */}
+                  </ul>
+                </aside>
+                {/* End .col-lg-3 */}
+                <div className="col-md-8 col-lg-9">
+                  <div className="tab-content">
+                    <div
+                      className="tab-pane fade active show"
+                      id="tab-account"
+                      role="tabpanel"
+                      aria-labelledby="tab-account-link"
+                    >
+                      <form action="post" onSubmit={updateUser}>
+                        <div className="row">
+                          <div className="col-sm-6">
+                            <label className="form-label">Tên người nhận</label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              id="inlineFormInputGroup0"
+                              placeholder=""
+                              name="nameReceiver"
+                              value={nameReceiver}
+                              onChange={(e) => setNameReceiver(e.target.value)}
+                              required
+                            />
+                          </div>
+                          {/* End .col-sm-6 */}
+                          <div className="col-sm-6">
+                            <label className="form-label">Số điện thoại</label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              id="inlineFormInputGroup1"
+                              placeholder=""
+                              name="phoneReceiver"
+                              value={phoneReceiver}
+                              onChange={(e) => setPhoneReceiver(e.target.value)}
+                              required
+                            />
+                          </div>
+                          {/* End .col-sm-6 */}
+                        </div>
+                        {/* End .row */}
+                        <label className="form-label">Email</label>
+                        <input
+                          type="email"
+                          className="form-control"
+                          id="inlineFormInputGroup1"
+                          placeholder=""
+                          name="emailReceiver"
+                          value={emailReceiver}
+                          onChange={(e) => setEmailReceiver(e.target.value)}
+                        />
+                        <div className="row">
+                          <div className="col-sm-6">
+                            <label htmlFor className="form-label">
+                              Tỉnh/Thành Phố
+                            </label>
+                            <select
+                              className="form-control"
+                              required
+                              value={selectedProvince}
+                              onChange={(e) => {
+                                setSelectedProvince(JSON.parse(e.target.value));
+                                setSelectedDistrict("");
+                                setSelectedCommune("");
+                              }}
+                            >
+                              <option value="" disabled hidden>
+                                Chọn tỉnh/thành phố
+                              </option>
+                              {provinces.map((province) => (
+                                <option
+                                  key={province.code}
+                                  value={JSON.stringify(province)}
+                                >
+                                  {province.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          {/* End .col-sm-6 */}
+                          <div className="col-sm-6">
+                            <label htmlFor className="form-label">
+                              Quận/Huyện
+                            </label>
+                            <select
+                              className="form-control"
+                              value={selectedDistrict}
+                              onChange={(e) => {
+                                setSelectedDistrict(JSON.parse(e.target.value));
+                                setSelectedCommune("");
+                              }}
+                              disabled={!selectedProvince}
+                              required
+                            >
+                              <option value="" disabled hidden>
+                                Chọn huyện/quận
+                              </option>
+                              {districts.map((district) => (
+                                <option
+                                  key={district.code}
+                                  value={JSON.stringify(district)}
+                                >
+                                  {district.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          {/* End .col-sm-6 */}
+                        </div>
+                        {/* End .row */}
+                        <div className="row">
+                          <div className="col-sm-6">
+                            <label htmlFor className="form-label">
+                              Phường/Xã
+                            </label>
+                            <select
+                              className="form-control"
+                              required
+                              value={selectedCommune}
+                              onChange={(e) => {
+                                setSelectedCommune(JSON.parse(e.target.value));
+                              }}
+                              disabled={!selectedDistrict}
+                            >
+                              <option value="" disabled hidden>
+                                Chọn xã/phường
+                              </option>
+                              {communes.map((commune) => (
+                                <option
+                                  key={commune.code}
+                                  value={JSON.stringify(commune)}
+                                >
+                                  {commune.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          {/* End .col-sm-6 */}
+                          <div className="col-sm-6">
+                            <label htmlFor className="form-label">
+                              Số nhà
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              id="inlineFormInputGroup1"
+                              placeholder="addressReceiver"
+                              name="addressReceiver"
+                              value={homeNumber}
+                              onChange={(e) => setHomeNumber(e.target.value)}
+                              required
+                            />
+                          </div>
+                          {/* End .col-sm-6 */}
+                        </div>
+                        <button
+                          type="submit"
+                          className="btn btn-outline-primary-2"
+                        >
+                          <span>SAVE CHANGES</span>
+                          <i className="icon-long-arrow-right" />
+                        </button>
+                      </form>
+                    </div>
+                    {/* .End .tab-pane */}
+                  </div>
+                </div>
+                {/* End .col-lg-9 */}
+              </div>
+              {/* End .row */}
+            </div>
+            {/* End .container */}
+          </div>
+          {/* End .dashboard */}
+        </div>
+        {/* End .page-content */}
+      </main>
 
       <Main_Footer />
-   
     </Fragment>
   );
 };

@@ -1,236 +1,585 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 // import MultiSelect from "react-multi-select-component";
-import { useDispatch, useSelector } from "react-redux";
-import { useHistory, useParams } from "react-router-dom";
 import "suneditor/dist/css/suneditor.min.css";
-import { createFeedback, getListCategoryArticle } from "../../actions";
-import { getArticleById } from "../../actions/article.actions";
-import MainFooter from "../../layouts/footer";
-import MainHeader from "../../layouts/header";
-import Moment from "react-moment";
+import Layout from "../../layouts/Layout";
 
 function Contact(props) {
-  const dispatch = useDispatch();
-  const history = useHistory();
-  const { blogId } = useParams();
+  // const dispatch = useDispatch();
+  // const history = useHistory();
+  // const { blogId } = useParams();
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  // const [name, setName] = useState("");
+  // const [email, setEmail] = useState("");
+  // const [phone, setPhone] = useState("");
+  // const [title, setTitle] = useState("");
+  // const [content, setContent] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const send = {
-      name,
-      email,
-      phone,
-      title,
-      content,
-    };
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   const send = {
+  //     name,
+  //     email,
+  //     phone,
+  //     title,
+  //     content,
+  //   };
 
-    console.log(send);
-    dispatch(createFeedback(send));
+  //   console.log(send);
+  //   dispatch(createFeedback(send));
 
-    setEmail("");
-    setName("");
-    setPhone("");
-    setTitle("");
-    setContent("");
-  };
+  //   setEmail("");
+  //   setName("");
+  //   setPhone("");
+  //   setTitle("");
+  //   setContent("");
+  // };
 
-  // useEffect(() => {
-  //   dispatch(getListCategoryArticle());
-  // }, []);
+  // // useEffect(() => {
+  // //   dispatch(getListCategoryArticle());
+  // // }, []);
 
-  // const listCate = useSelector(
-  //   (state) => state.categoryArticle.listCategoryArticle
-  // );
+  // // const listCate = useSelector(
+  // //   (state) => state.categoryArticle.listCategoryArticle
+  // // );
 
-  // useEffect(() => {
-  //   dispatch(getArticleById(+blogId));
-  // }, []);
+  // // useEffect(() => {
+  // //   dispatch(getArticleById(+blogId));
+  // // }, []);
 
-  // const findItem = useSelector((state) => state.article.article);
+  // // const findItem = useSelector((state) => state.article.article);
 
   return (
-    <>
-      <MainHeader />
-      <div className="padding-y">
-        <div className="container">
-          <h2 className="text-center mb-5">Liên hệ</h2>
-          <div className="row">
-            <div className="col-12">
-              <div className="row gy-3">
-                <div className="col-6">
-                  <article className="card card-body">
-                    <div className="itemside align-items-center">
-                      <div className="aside">
-                        <span className="rounded-circle text-secondary icon-md bg-secondary-light">
-                          <i className="fa fa-star" />
-                        </span>
-                      </div>
-                      <div className="info">
-                        <h6 className="title">Tên: Hoàng Long Nhật</h6>
-                        {/* <p>
-                          Lorem ipsum dolor sit amet, consectetur adipisicing
-                          elit sed do eiusmor
-                        </p> */}
-                      </div>
-                    </div>
-                    {/* itemside // */}
-                  </article>
-                  {/* card.// */}
-                </div>
-                {/* col // */}
-                <div className="col-6">
-                  <article className="card card-body">
-                    <div className="itemside align-items-center">
-                      <div className="aside">
-                        <span className="rounded-circle text-warning icon-md bg-warning-light">
-                          <i className="fa fa-star" />
-                        </span>
-                      </div>
-                      <div className="info">
-                        <h6 className="title">Địa chỉ : Thượng phú phường-Triệu Sơn- Triệu Phong- Quảng Trị</h6>
-                       
-                      </div>
-                    </div>
-                    {/* itemside // */}
-                  </article>
-                  {/* card.// */}
-                </div>
-                {/* col // */}
-                <div className="col-6">
-                  <article className="card card-body">
-                    <div className="itemside align-items-center">
-                      <div className="aside">
-                        <span className="rounded-circle text-success icon-md bg-success-light">
-                          <i className="fa fa-star" />
-                        </span>
-                      </div>
-                      <div className="info">
-                        <h6 className="title">SĐT: 0369621657</h6>
-                        {/* <p>
-                          Lorem ipsum dolor sit amet, consectetur adipisicing
-                          elit sed do eiusmor
-                        </p> */}
-                      </div>
-                    </div>
-                    {/* itemside // */}
-                  </article>
-                  {/* card.// */}
-                </div>
-
-                <div className="col-6">
-                  <article className="card card-body">
-                    <div className="itemside align-items-center">
-                      <div className="aside">
-                        <span className="rounded-circle text-info icon-md bg-success-light">
-                          <i className="fa fa-star" />
-                        </span>
-                      </div>
-                      <div className="info">
-                        <h6 className="title">Email: hoanglongnhat0605@gmail.com</h6>
-                        {/* <p>
-                          Lorem ipsum dolor sit amet, consectetur adipisicing
-                          elit sed do eiusmor
-                        </p> */}
-                      </div>
-                    </div>
-                    {/* itemside // */}
-                  </article>
-                  {/* card.// */}
-                </div>
-                {/* col // */}
-              </div>
-            </div>
-
-            <div className="col-2"></div>
-            <div className="col-8 my-5">
-              <form className="row" onSubmit={handleSubmit}>
-                <h4 className="text-center">Để lại thông tin phản hồi về cửa hàng</h4>
-                <div className="mb-3 col-6">
-                  <label className="form-label">Tên</label>
-                  <input
-                    type="text"
-                    name="name"
-                    className="form-control"
-                    placeholder=""
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                  />
-                </div>
-                {/* col end.// */}
-                <div className="mb-3 col-6">
-                  <label className="form-label">Email</label>
-                  <input
-                    type="email"
-                    name="email"
-                    className="form-control"
-                    placeholder=""
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div className="mb-3 col-6" >
-                  <label className="form-label">Số điện thoại</label>
-                  <input
-                    type="number"
-                    name="phone"
-                    className="form-control"
-                    placeholder=""
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div className="mb-3 col-6">
-                  <label className="form-label">Tiêu đề</label>
-                  <input
-                    type="text"
-                    name="title"
-                    className="form-control"
-                    placeholder=""
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div class="mb-3">
-                  <label for="shortDesc">Nội dung</label>
-                  <textarea
-                    class="form-control"
-                    id="content"
-                    rows="4"
-                    name="content"
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    required
-                  >
-                    {content}
-                  </textarea>
-                </div>
-                <button
-                  type="submit"
-                  className="btn btn-warning"
-                  style={{ width: "80px", margin: "auto" }}
-                >
-                  Gửi
-                </button>
-              </form>
-            </div>
+    <Layout>
+      <main className="main">
+        <nav aria-label="breadcrumb" className="breadcrumb-nav border-0 mb-0">
+          <div className="container">
+            <ol className="breadcrumb">
+              <li className="breadcrumb-item">
+                <a href="index.html">Home</a>
+              </li>
+              <li className="breadcrumb-item">
+                <a href="#">Pages</a>
+              </li>
+              <li className="breadcrumb-item active" aria-current="page">
+                About us
+              </li>
+            </ol>
           </div>
+          {/* End .container */}
+        </nav>
+        {/* End .breadcrumb-nav */}
+        <div className="container">
+          <div
+            className="page-header page-header-big text-center"
+            style={{
+              backgroundImage: 'url("assets/images/about-header-bg.jpg")',
+            }}
+          >
+            <h1 className="page-title text-white">
+              About us<span className="text-white">Who we are</span>
+            </h1>
+          </div>
+          {/* End .page-header */}
         </div>
-      </div>
-      <MainFooter />
-    </>
+        {/* End .container */}
+        <div className="page-content pb-0">
+          <div className="container">
+            <div className="row">
+              <div className="col-lg-6 mb-3 mb-lg-0">
+                <h2 className="title">Our Vision</h2>
+                {/* End .title */}
+                <p>
+                  Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+                  Phasellus hendrerit. Pellentesque aliquet nibh nec urna. In
+                  nisi neque, aliquet vel, dapibus id, mattis vel, nisi. Sed
+                  pretium, ligula sollicitudin laoreet viverra, tortor libero
+                  sodales leo, eget blandit nunc tortor eu nibh.{" "}
+                </p>
+              </div>
+              {/* End .col-lg-6 */}
+              <div className="col-lg-6">
+                <h2 className="title">Our Mission</h2>
+                {/* End .title */}
+                <p>
+                  Sed egestas, ante et vulputate volutpat, eros pede semper est,
+                  vitae luctus metus libero eu augue. Morbi purus libero,
+                  faucibus adipiscing, commodo quis, gravida id, est. Sed
+                  lectus. <br />
+                  Praesent elementum hendrerit tortor. Sed semper lorem at
+                  felis.{" "}
+                </p>
+              </div>
+              {/* End .col-lg-6 */}
+            </div>
+            {/* End .row */}
+            <div className="mb-5" />
+            {/* End .mb-4 */}
+          </div>
+          {/* End .container */}
+          <div className="bg-light-2 pt-6 pb-5 mb-6 mb-lg-8">
+            <div className="container">
+              <div className="row">
+                <div className="col-lg-5 mb-3 mb-lg-0">
+                  <h2 className="title">Who We Are</h2>
+                  {/* End .title */}
+                  <p className="lead text-primary mb-3">
+                    Pellentesque odio nisi, euismod pharetra a ultricies <br />
+                    in diam. Sed arcu. Cras consequat
+                  </p>
+                  {/* End .lead text-primary */}
+                  <p className="mb-2">
+                    Sed pretium, ligula sollicitudin laoreet viverra, tortor
+                    libero sodales leo, eget blandit nunc tortor eu nibh.
+                    Suspendisse potenti. Sed egestas, ante et vulputate
+                    volutpat, uctus metus libero eu augue.{" "}
+                  </p>
+                  <a
+                    href="blog.html"
+                    className="btn btn-sm btn-minwidth btn-outline-primary-2"
+                  >
+                    <span>VIEW OUR NEWS</span>
+                    <i className="icon-long-arrow-right" />
+                  </a>
+                </div>
+                {/* End .col-lg-5 */}
+                <div className="col-lg-6 offset-lg-1">
+                  <div className="about-images">
+                    <img
+                      src="assets/images/about/img-1.jpg"
+                      alt=""
+                      className="about-img-front"
+                    />
+                    <img
+                      src="assets/images/about/img-2.jpg"
+                      alt=""
+                      className="about-img-back"
+                    />
+                  </div>
+                  {/* End .about-images */}
+                </div>
+                {/* End .col-lg-6 */}
+              </div>
+              {/* End .row */}
+            </div>
+            {/* End .container */}
+          </div>
+          {/* End .bg-light-2 pt-6 pb-6 */}
+          <div className="container">
+            <div className="row">
+              <div className="col-lg-5">
+                <div className="brands-text">
+                  <h2 className="title">
+                    The world's premium design brands in one destination.
+                  </h2>
+                  {/* End .title */}
+                  <p>
+                    Phasellus hendrerit. Pellentesque aliquet nibh nec urna. In
+                    nisi neque, aliquet vel, dapibus id, mattis vel, nis
+                  </p>
+                </div>
+                {/* End .brands-text */}
+              </div>
+              {/* End .col-lg-5 */}
+              <div className="col-lg-7">
+                <div className="brands-display">
+                  <div className="row justify-content-center">
+                    <div className="col-6 col-sm-4">
+                      <a href="#" className="brand">
+                        <img
+                          src="assets/images/brands/1.png"
+                          alt="Brand Name"
+                        />
+                      </a>
+                    </div>
+                    {/* End .col-sm-4 */}
+                    <div className="col-6 col-sm-4">
+                      <a href="#" className="brand">
+                        <img
+                          src="assets/images/brands/2.png"
+                          alt="Brand Name"
+                        />
+                      </a>
+                    </div>
+                    {/* End .col-sm-4 */}
+                    <div className="col-6 col-sm-4">
+                      <a href="#" className="brand">
+                        <img
+                          src="assets/images/brands/3.png"
+                          alt="Brand Name"
+                        />
+                      </a>
+                    </div>
+                    {/* End .col-sm-4 */}
+                    <div className="col-6 col-sm-4">
+                      <a href="#" className="brand">
+                        <img
+                          src="assets/images/brands/4.png"
+                          alt="Brand Name"
+                        />
+                      </a>
+                    </div>
+                    {/* End .col-sm-4 */}
+                    <div className="col-6 col-sm-4">
+                      <a href="#" className="brand">
+                        <img
+                          src="assets/images/brands/5.png"
+                          alt="Brand Name"
+                        />
+                      </a>
+                    </div>
+                    {/* End .col-sm-4 */}
+                    <div className="col-6 col-sm-4">
+                      <a href="#" className="brand">
+                        <img
+                          src="assets/images/brands/6.png"
+                          alt="Brand Name"
+                        />
+                      </a>
+                    </div>
+                    {/* End .col-sm-4 */}
+                    <div className="col-6 col-sm-4">
+                      <a href="#" className="brand">
+                        <img
+                          src="assets/images/brands/7.png"
+                          alt="Brand Name"
+                        />
+                      </a>
+                    </div>
+                    {/* End .col-sm-4 */}
+                    <div className="col-6 col-sm-4">
+                      <a href="#" className="brand">
+                        <img
+                          src="assets/images/brands/8.png"
+                          alt="Brand Name"
+                        />
+                      </a>
+                    </div>
+                    {/* End .col-sm-4 */}
+                    <div className="col-6 col-sm-4">
+                      <a href="#" className="brand">
+                        <img
+                          src="assets/images/brands/9.png"
+                          alt="Brand Name"
+                        />
+                      </a>
+                    </div>
+                    {/* End .col-sm-4 */}
+                  </div>
+                  {/* End .row */}
+                </div>
+                {/* End .brands-display */}
+              </div>
+              {/* End .col-lg-7 */}
+            </div>
+            {/* End .row */}
+            <hr className="mt-4 mb-6" />
+            <h2 className="title text-center mb-4">Meet Our Team</h2>
+            {/* End .title text-center mb-2 */}
+            <div className="row">
+              <div className="col-md-4">
+                <div className="member member-anim text-center">
+                  <figure className="member-media">
+                    <img
+                      src="assets/images/team/member-1.jpg"
+                      alt="member photo"
+                    />
+                    <figcaption className="member-overlay">
+                      <div className="member-overlay-content">
+                        <h3 className="member-title">
+                          Samanta Grey<span>Founder &amp; CEO</span>
+                        </h3>
+                        {/* End .member-title */}
+                        <p>
+                          Sed pretium, ligula sollicitudin viverra, tortor
+                          libero sodales leo, eget blandit nunc.
+                        </p>
+                        <div className="social-icons social-icons-simple">
+                          <a
+                            href="#"
+                            className="social-icon"
+                            title="Facebook"
+                            target="_blank"
+                          >
+                            <i className="icon-facebook-f" />
+                          </a>
+                          <a
+                            href="#"
+                            className="social-icon"
+                            title="Twitter"
+                            target="_blank"
+                          >
+                            <i className="icon-twitter" />
+                          </a>
+                          <a
+                            href="#"
+                            className="social-icon"
+                            title="Instagram"
+                            target="_blank"
+                          >
+                            <i className="icon-instagram" />
+                          </a>
+                        </div>
+                        {/* End .soial-icons */}
+                      </div>
+                      {/* End .member-overlay-content */}
+                    </figcaption>
+                    {/* End .member-overlay */}
+                  </figure>
+                  {/* End .member-media */}
+                  <div className="member-content">
+                    <h3 className="member-title">
+                      Samanta Grey<span>Founder &amp; CEO</span>
+                    </h3>
+                    {/* End .member-title */}
+                  </div>
+                  {/* End .member-content */}
+                </div>
+                {/* End .member */}
+              </div>
+              {/* End .col-md-4 */}
+              <div className="col-md-4">
+                <div className="member member-anim text-center">
+                  <figure className="member-media">
+                    <img
+                      src="assets/images/team/member-2.jpg"
+                      alt="member photo"
+                    />
+                    <figcaption className="member-overlay">
+                      <div className="member-overlay-content">
+                        <h3 className="member-title">
+                          Bruce Sutton<span>Sales &amp; Marketing Manager</span>
+                        </h3>
+                        {/* End .member-title */}
+                        <p>
+                          Sed pretium, ligula sollicitudin viverra, tortor
+                          libero sodales leo, eget blandit nunc.
+                        </p>
+                        <div className="social-icons social-icons-simple">
+                          <a
+                            href="#"
+                            className="social-icon"
+                            title="Facebook"
+                            target="_blank"
+                          >
+                            <i className="icon-facebook-f" />
+                          </a>
+                          <a
+                            href="#"
+                            className="social-icon"
+                            title="Twitter"
+                            target="_blank"
+                          >
+                            <i className="icon-twitter" />
+                          </a>
+                          <a
+                            href="#"
+                            className="social-icon"
+                            title="Instagram"
+                            target="_blank"
+                          >
+                            <i className="icon-instagram" />
+                          </a>
+                        </div>
+                        {/* End .soial-icons */}
+                      </div>
+                      {/* End .member-overlay-content */}
+                    </figcaption>
+                    {/* End .member-overlay */}
+                  </figure>
+                  {/* End .member-media */}
+                  <div className="member-content">
+                    <h3 className="member-title">
+                      Bruce Sutton<span>Sales &amp; Marketing Manager</span>
+                    </h3>
+                    {/* End .member-title */}
+                  </div>
+                  {/* End .member-content */}
+                </div>
+                {/* End .member */}
+              </div>
+              {/* End .col-md-4 */}
+              <div className="col-md-4">
+                <div className="member member-anim text-center">
+                  <figure className="member-media">
+                    <img
+                      src="assets/images/team/member-3.jpg"
+                      alt="member photo"
+                    />
+                    <figcaption className="member-overlay">
+                      <div className="member-overlay-content">
+                        <h3 className="member-title">
+                          Janet Joy<span>Product Manager</span>
+                        </h3>
+                        {/* End .member-title */}
+                        <p>
+                          Sed pretium, ligula sollicitudin viverra, tortor
+                          libero sodales leo, eget blandit nunc.
+                        </p>
+                        <div className="social-icons social-icons-simple">
+                          <a
+                            href="#"
+                            className="social-icon"
+                            title="Facebook"
+                            target="_blank"
+                          >
+                            <i className="icon-facebook-f" />
+                          </a>
+                          <a
+                            href="#"
+                            className="social-icon"
+                            title="Twitter"
+                            target="_blank"
+                          >
+                            <i className="icon-twitter" />
+                          </a>
+                          <a
+                            href="#"
+                            className="social-icon"
+                            title="Instagram"
+                            target="_blank"
+                          >
+                            <i className="icon-instagram" />
+                          </a>
+                        </div>
+                        {/* End .soial-icons */}
+                      </div>
+                      {/* End .member-overlay-content */}
+                    </figcaption>
+                    {/* End .member-overlay */}
+                  </figure>
+                  {/* End .member-media */}
+                  <div className="member-content">
+                    <h3 className="member-title">
+                      Janet Joy<span>Product Manager</span>
+                    </h3>
+                    {/* End .member-title */}
+                  </div>
+                  {/* End .member-content */}
+                </div>
+                {/* End .member */}
+              </div>
+              {/* End .col-md-4 */}
+            </div>
+            {/* End .row */}
+          </div>
+          {/* End .container */}
+          <div className="mb-2" />
+          {/* End .mb-2 */}
+          <div className="about-testimonials bg-light-2 pt-6 pb-6">
+            <div className="container">
+              <h2 className="title text-center mb-3">
+                What Customer Say About Us
+              </h2>
+              {/* End .title text-center */}
+              <div
+                className="owl-carousel owl-simple owl-testimonials-photo owl-loaded owl-drag"
+                data-toggle="owl"
+                data-owl-options='{
+                          "nav": false, 
+                          "dots": true,
+                          "margin": 20,
+                          "loop": false,
+                          "responsive": {
+                              "1200": {
+                                  "nav": true
+                              }
+                          }
+                      }'
+              >
+                {/* End .testimonial */}
+                {/* End .testimonial */}
+                <div className="owl-stage-outer">
+                  <div
+                    className="owl-stage"
+                    style={{
+                      transform: "translate3d(-1188px, 0px, 0px)",
+                      transition: "all 0.4s ease 0s",
+                      width: 2376,
+                    }}
+                  >
+                    <div
+                      className="owl-item"
+                      style={{ width: 1168, marginRight: 20 }}
+                    >
+                      <blockquote className="testimonial text-center">
+                        <img
+                          src="assets/images/testimonials/user-1.jpg"
+                          alt="user"
+                        />
+                        <p>
+                          “ Lorem ipsum dolor sit amet, consectetuer adipiscing
+                          elit. Pellentesque aliquet nibh nec urna. <br />
+                          In nisi neque, aliquet vel, dapibus id, mattis vel,
+                          nisi. Sed pretium, ligula sollicitudin laoreet
+                          viverra, tortor libero sodales leo, eget blandit nunc
+                          tortor eu nibh. Nullam mollis. Ut justo. Suspendisse
+                          potenti. ”
+                        </p>
+                        <cite>
+                          Jenson Gregory
+                          <span>Customer</span>
+                        </cite>
+                      </blockquote>
+                    </div>
+                    <div
+                      className="owl-item active"
+                      style={{ width: 1168, marginRight: 20 }}
+                    >
+                      <blockquote className="testimonial text-center">
+                        <img
+                          src="assets/images/testimonials/user-2.jpg"
+                          alt="user"
+                        />
+                        <p>
+                          “ Impedit, ratione sequi, sunt incidunt magnam et.
+                          Delectus obcaecati optio eius error libero perferendis
+                          nesciunt atque dolores magni recusandae! Doloremque
+                          quidem error eum quis similique doloribus natus qui ut
+                          ipsum.Velit quos ipsa exercitationem, vel unde
+                          obcaecati impedit eveniet non. ”
+                        </p>
+                        <cite>
+                          Victoria Ventura
+                          <span>Customer</span>
+                        </cite>
+                      </blockquote>
+                    </div>
+                  </div>
+                </div>
+                <div className="owl-nav">
+                  <button
+                    type="button"
+                    role="presentation"
+                    className="owl-prev"
+                  >
+                    <i className="icon-angle-left" />
+                  </button>
+                  <button
+                    type="button"
+                    role="presentation"
+                    className="owl-next disabled"
+                  >
+                    <i className="icon-angle-right" />
+                  </button>
+                </div>
+                <div className="owl-dots">
+                  <button role="button" className="owl-dot">
+                    <span />
+                  </button>
+                  <button role="button" className="owl-dot active">
+                    <span />
+                  </button>
+                </div>
+              </div>
+              {/* End .testimonials-slider owl-carousel */}
+            </div>
+            {/* End .container */}
+          </div>
+          {/* End .bg-light-2 pt-5 pb-6 */}
+        </div>
+        {/* End .page-content */}
+      </main>
+    </Layout>
   );
 }
 

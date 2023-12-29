@@ -21,7 +21,7 @@ export default function (state = initialState, action) {
       if (localStorage.getItem("cartItem")) {
         let cart = JSON.parse(localStorage.getItem("cartItem"));
         cart.forEach((product) => {
-          x += product.quantity * product.promotionPrice;
+          x += product.quantity * product.price;
         });
         return {
           ...state,
@@ -48,7 +48,7 @@ export default function (state = initialState, action) {
           });
         });
         final.forEach((product) => {
-          k += product.quantity * product.promotionPrice;
+          k += product.quantity * product.price;
         });
         return {
           ...state,
@@ -67,7 +67,7 @@ export default function (state = initialState, action) {
       let aNewTotal = 0;
 
       aNewProducts.forEach((product) => {
-        aNewTotal += product.quantity * product.promotionPrice;
+        aNewTotal += product.quantity * product.price;
       });
       return {
         ...state,
@@ -81,7 +81,7 @@ export default function (state = initialState, action) {
       );
       let rNewTotal = 0;
       rNewProducts.forEach((product) => {
-        rNewTotal += product.quantity * product.promotionPrice;
+        rNewTotal += product.quantity * product.price;
       });
       console.log("reduces remove to cart");
 
@@ -94,7 +94,7 @@ export default function (state = initialState, action) {
     case INCREASE_ITEM:
       // for increse product price
       let seletedproduct = action.product;
-      const prodPrice = seletedproduct.promotionPrice;
+      const prodPrice = seletedproduct.price;
       const prodQTY = seletedproduct.quantity + 1;
 
       let iNewProducts = state.products.map((product, index) => {
@@ -106,7 +106,7 @@ export default function (state = initialState, action) {
       let iNewTotal = 0;
 
       iNewProducts.forEach((product) => {
-        iNewTotal += product.quantity * product.promotionPrice;
+        iNewTotal += product.quantity * product.price;
       });
 
       return {
@@ -125,7 +125,7 @@ export default function (state = initialState, action) {
       });
       let dNewTotal = 0;
       dNewProducts.forEach((product) => {
-        dNewTotal += product.quantity * product.promotionPrice;
+        dNewTotal += product.quantity * product.price;
       });
 
       return {

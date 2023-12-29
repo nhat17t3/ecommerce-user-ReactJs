@@ -1,17 +1,14 @@
 import React, { Fragment, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Redirect } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { signup } from "../../actions";
 import MainFooter from "../../layouts/footer";
 import MainHeader from "../../layouts/header";
 
 const SignupPage = () => {
-  const [username, setUsername] = useState("");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   // const [roles , setRoles] = useState([]);
 
@@ -22,24 +19,19 @@ const SignupPage = () => {
   const signupUser = (e) => {
     e.preventDefault();
     const send = {
-      username,
+      name,
       email,
       password,
-      firstName,
-      lastName,
       phone,
-      roles: ["ROLE_USER"],
+      roles: ["USER"],
     };
 
     console.log(send);
     dispatch(signup(send));
-
-    setEmail("");
-    setUsername("");
-    setPassword("");
-    setPhone("");
-    setFirstName("");
-    setLastName("");
+    // setEmail("");
+    // setName("");
+    // setPassword("");
+    // setPhone("");
   };
 
   // if (auth.message == "") {
@@ -53,116 +45,182 @@ const SignupPage = () => {
   return (
     <Fragment>
       <MainHeader />
-      <section className="padding-y bg-light">
-        <div className="container">
-          <div className="row d-flex justify-content-center">
-            {/* <div className="col-4"></div> */}
-            <aside className="col-lg-4 col-md-6">
-              <div className="card">
-                <div className="card-body">
-                  <h3 className="mb-4">Đăng kí</h3>
-                  <form onSubmit={signupUser}>
-                    <div className="mb-3">
-                      <label className="form-label">Họ</label>
-                      <input
-                        type="text"
-                        name="firstName"
-                        className="form-control"
-                        placeholder=""
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        required
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label className="form-label">Tên</label>
-                      <input
-                        type="text"
-                        name="lastName"
-                        className="form-control"
-                        placeholder=""
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        required
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label className="form-label">Tên đăng nhập</label>
-                      <input
-                        type="text"
-                        name="username"
-                        className="form-control"
-                        placeholder=""
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        required
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label className="form-label">Email</label>
-                      <input
-                        type="email"
-                        name="email"
-                        className="form-control"
-                        placeholder=""
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                      />
-                    </div>
-
-                    <div className="mb-3">
-                      <label className="form-label">Số điện thoại</label>
-                      <input
-                        type="number"
-                        name="phone"
-                        className="form-control"
-                        placeholder=""
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        required
-                      />
-                    </div>
-
-                    <div className="mb-2">
-                      <label className="form-label">Mật khẩu</label>
-                      {/* <a className="float-end" href="#">
-                        Forgot?
-                      </a> */}
-                      <input
-                        type="password"
-                        name="password"
-                        className="form-control"
-                        placeholder=""
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                      />
-                    </div>
-
-                    <button
-                      className="btn w-100 btn-primary mb-4"
-                      type="submit"
+      <main className="main">
+        <nav aria-label="breadcrumb" className="breadcrumb-nav border-0 mb-0">
+          <div className="container">
+            <ol className="breadcrumb">
+              <li className="breadcrumb-item">
+                <a href="index.html">Trang chủ</a>
+              </li>
+              <li className="breadcrumb-item">
+                <a href="#">Đăng xuất</a>
+              </li>
+            </ol>
+          </div>
+          {/* End .container */}
+        </nav>
+        {/* End .breadcrumb-nav */}
+        <div
+          className="login-page bg-image pt-8 pb-8 pt-md-12 pb-md-12 pt-lg-17 pb-lg-17"
+          style={{
+            backgroundImage: 'url("assets/images/backgrounds/login-bg.jpg")',
+          }}
+        >
+          <div className="container">
+            <div className="form-box">
+              <div className="form-tab">
+                <ul className="nav nav-pills nav-fill" role="tablist">
+                  <li className="nav-item">
+                    <Link
+                      className="nav-link "
+                      id="signin-tab-2"
+                      data-toggle="tab"
+                      href="#signin-2"
+                      role="tab"
+                      aria-controls="signin-2"
+                      aria-selected="false"
+                      to="signin"
                     >
-                      Đăng kí
-                    </button>
-                  </form>
-                  {/* form end.// */}
-                  <p className="mb-1 text-center">
-                    Bạn đã có tài khoản?{" "}
-                    <Link to="/signin" href="#">
                       Đăng nhập
                     </Link>
-                  </p>
+                  </li>
+                  <li className="nav-item">
+                    <Link
+                      className="nav-link active"
+                      id="register-tab-2"
+                      data-toggle="tab"
+                      href="#register-2"
+                      role="tab"
+                      aria-controls="register-2"
+                      aria-selected="true"
+                      to="signup"
+                    >
+                      Đăng kí
+                    </Link>
+                  </li>
+                </ul>
+                <div className="tab-content">
+                  <div
+                    className="tab-pane fade show active"
+                    id="signin-2"
+                    role="tabpanel"
+                    aria-labelledby="signin-tab-2"
+                  >
+                    <form onSubmit={signupUser}>
+                      <div className="form-group">
+                        <label htmlFor="singin-email-2">Tên *</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="singin-email-2"
+                          name="singin-email"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="singin-email-2">Số điện thoại *</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="singin-email-2"
+                          name="singin-email"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="singin-email-2">email address *</label>
+                        <input
+                          type="email"
+                          className="form-control"
+                          id="singin-email-2"
+                          name="singin-email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label htmlFor="singin-password-2">Password *</label>
+                        <input
+                          type="password"
+                          className="form-control"
+                          id="singin-password-2"
+                          name="singin-password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          required
+                        />
+                      </div>
+                      {/* End .form-group */}
+                      <div className="form-footer">
+                        <button
+                          type="submit"
+                          className="btn btn-outline-primary-2"
+                        >
+                          <span>Gửi</span>
+                          <i className="icon-long-arrow-right" />
+                        </button>
+                        <div className="custom-control custom-checkbox">
+                          <input
+                            type="checkbox"
+                            className="custom-control-input"
+                            id="signin-remember-2"
+                          />
+                          <label
+                            className="custom-control-label"
+                            htmlFor="signin-remember-2"
+                          >
+                            Ghi nhớ
+                          </label>
+                        </div>
+                        {/* End .custom-checkbox */}
+                        <a href="#" className="forgot-link">
+                          Quên mật khẩu?
+                        </a>
+                      </div>
+                      {/* End .form-footer */}
+                    </form>
+                    <div className="form-choice">
+                      <p className="text-center">Hoặc đăng nhập với</p>
+                      <div className="row">
+                        <div className="col-sm-6">
+                          <a href="#" className="btn btn-login btn-g">
+                            <i className="icon-google" />
+                            Login With Google
+                          </a>
+                        </div>
+                        {/* End .col-6 */}
+                        <div className="col-sm-6">
+                          <a href="#" className="btn btn-login btn-f">
+                            <i className="icon-facebook-f" />
+                            Login With Facebook
+                          </a>
+                        </div>
+                        {/* End .col-6 */}
+                      </div>
+                      {/* End .row */}
+                    </div>
+                    {/* End .form-choice */}
+                  </div>
+                  {/* .End .tab-pane */}
+                  {/* .End .tab-pane */}
                 </div>
-                {/* card-body end.// */}
+                {/* End .tab-content */}
               </div>
-              {/* card end.// */}
-              {/* ============= COMPONENT LOGIN 1 END.// ============= */}
-            </aside>
+              {/* End .form-tab */}
+            </div>
+            {/* End .form-box */}
           </div>
+          {/* End .container */}
         </div>
-      </section>
+        {/* End .login-page section-bg */}
+      </main>
+
       <MainFooter />
     </Fragment>
   );

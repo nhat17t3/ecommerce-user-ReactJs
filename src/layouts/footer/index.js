@@ -6,77 +6,139 @@ const Footer2 = () => {
 
   return (
     <Fragment>
-      <footer className="section-footer bg-custom  color-custom">
-  <div className="container">
-    <section className="footer-main padding-y">
+<footer className="footer">
+  <div className="footer-middle">
+    <div className="container">
       <div className="row">
-        {/* <aside className="col-12 col-sm-12 col-lg-3">
-          <article className="me-lg-4">
-            <img src="/logo192.png" className="logo-footer" />
-            <p className="mt-3"> © 2021- 2022 Templatemount. <br /> All rights reserved. </p>
-          </article>
-        </aside> */}
-        <aside className="col-6 col-sm-4 col-lg-3">
-          <h6 className="title">Cửa hàng</h6>
-          <ul className="list-menu mb-4">
+        <div className="col-sm-6 col-lg-3">
+          <div className="widget widget-about">
+            <img
+              src="/logov2.png"
+              className="footer-logo"
+              alt="Footer Logo"
+              width={105}
+              height={25}
+            />
+            <p>
+              Chúng tôi luôn đem đến những sản phẩm với chất lượng tốt nhất cho khách hàng
+            </p>
+            <div className="social-icons">
+              <a
+                href="#"
+                className="social-icon"
+                target="_blank"
+                title="Facebook"
+              >
+                <i className="icon-facebook-f" />
+              </a>
+              <a
+                href="#"
+                className="social-icon"
+                target="_blank"
+                title="Twitter"
+              >
+                <i className="icon-twitter" />
+              </a>
+              <a
+                href="#"
+                className="social-icon"
+                target="_blank"
+                title="Instagram"
+              >
+                <i className="icon-instagram" />
+              </a>
+              <a
+                href="#"
+                className="social-icon"
+                target="_blank"
+                title="Youtube"
+              >
+                <i className="icon-youtube" />
+              </a>
+              <a
+                href="#"
+                className="social-icon"
+                target="_blank"
+                title="Pinterest"
+              >
+                <i className="icon-pinterest" />
+              </a>
+            </div>
+            {/* End .soial-icons */}
+          </div>
+          {/* End .widget about-widget */}
+        </div>
+        {/* End .col-sm-6 col-lg-3 */}
+        <div className="col-sm-6 col-lg-3">
+          <div className="widget">
+            <h4 className="widget-title">Cửa hàng</h4>
+            {/* End .widget-title */}
+            <ul className="widget-list">
             <li> <a href="#">Về chúng tôi</a></li>
-            <li> <a href="#">Thương hiệu</a></li>
-            <li> <a href="#">Danh mục</a></li>
-            <li> <a href="#">Bài viết</a></li>
-          </ul>
-        </aside>
-        <aside className="col-6 col-sm-4 col-lg-3">
-          <h6 className="title">Thông tin</h6>
-          <ul className="list-menu mb-4">
+            <li> <a href="#">Thương hiệu nổi bật</a></li>
+            <li> <a href="#">Danh mục sản phẩm</a></li>
+            <li> <a href="#">Bài viết nổi bật</a></li>
+            </ul>
+            {/* End .widget-list */}
+          </div>
+          {/* End .widget */}
+        </div>
+        {/* End .col-sm-6 col-lg-3 */}
+        <div className="col-sm-6 col-lg-3">
+          <div className="widget">
+            <h4 className="widget-title">Thông tin</h4>
+            {/* End .widget-title */}
+            <ul className="widget-list">
             <li> <a href="#">Trung tâm trợ giúp</a></li>
             <li> <a href="#">Chính sách hoàn trả</a></li>
             <li> <a href="#">Thông tin vận chuyển</a></li>
             <li> <a href="#">Chính sách bảo mật</a></li>
-          </ul>
-        </aside>
-        <aside className="col-6 col-sm-4  col-lg-3">
-          <h6 className="title">Hỗ trợ</h6>
-          <ul className="list-menu mb-4">
+            </ul>
+            {/* End .widget-list */}
+          </div>
+          {/* End .widget */}
+        </div>
+        {/* End .col-sm-6 col-lg-3 */}
+        <div className="col-sm-6 col-lg-3">
+          <div className="widget">
+            <h4 className="widget-title">Hỗ trợ</h4>
+            {/* End .widget-title */}
+            <ul className="widget-list">
             <li> <a href="#">Trung tâm trợ giúp </a></li>
             <li> <a href="#"> Tài liệu </a></li>
             <li> <a href="#"> Khôi phục tài khoản </a></li>
             <li> <a href="#"> Đơn hàng của bạn </a></li>
-          </ul>
-        </aside>
-        <aside className="col-12 col-sm-12 col-lg-3">
-          <h6 className="title">Tin tức mới</h6>
-          <p>Nhận các thông tin mới nhất về sản phẩm </p>
-          <form className="mb-3">
-            <div className="input-group">
-              <input className="form-control" type="text" placeholder="Email" />
-              <button className="btn btn-light" type="button">
-                Gửi
-              </button>
-            </div> {/* input-group.// */}
-          </form>
-        </aside>
-      </div> {/* row.// */}
-    </section>  {/* footer-top.// */}
-    <section className="footer-bottom d-flex justify-content-lg-between border-top">
-      <div>
-        <i className="fab fa-lg fa-cc-visa" />
-        <i className="fab fa-lg fa-cc-amex" />
-        <i className="fab fa-lg fa-cc-mastercard" />
-        <i className="fab fa-lg fa-cc-paypal" />
+            </ul>
+            {/* End .widget-list */}
+          </div>
+          {/* End .widget */}
+        </div>
+        {/* End .col-sm-6 col-lg-3 */}
       </div>
-      {/* <nav className="dropup">
-        <button className="dropdown-toggle btn d-flex align-items-center py-0" type="button" data-bs-toggle="dropdown">
-          <img src="images/flags/flag-usa.png" className="me-2" height={20} /> 
-          <span>English</span>
-        </button>
-        <ul className="dropdown-menu dropdown-menu-end">
-          <li><a className="dropdown-item" href="#">Russian</a></li>
-          <li><a className="dropdown-item" href="#">Arabic</a></li>
-          <li><a className="dropdown-item" href="#">Spanish</a></li>
-        </ul>
-      </nav> */}
-    </section>
-  </div> {/* container end.// */}
+      {/* End .row */}
+    </div>
+    {/* End .container */}
+  </div>
+  {/* End .footer-middle */}
+  <div className="footer-bottom">
+    <div className="container">
+      <p className="footer-copyright">
+        Copyright © 2019 Molla Store. All Rights Reserved.
+      </p>
+      {/* End .footer-copyright */}
+      <figure className="footer-payments">
+        <img
+          src="assets/images/payments.png"
+          alt="Payment methods"
+          width={272}
+          height={20}
+        />
+      </figure>
+      {/* End .footer-payments */}
+    </div>
+    {/* End .container */}
+  </div>
+  {/* End .footer-bottom */}
 </footer>
 
     </Fragment>

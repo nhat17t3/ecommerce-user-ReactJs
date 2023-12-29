@@ -1,21 +1,13 @@
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
-import React, { Fragment, useEffect, useState } from "react";
-//import Alert from '../../../layouts/alert/Alert';
-// import { setAlert } from '../../../actions/alert';
-import { useAlert } from "react-alert";
+import Slider from "rc-slider";
+import "rc-slider/assets/index.css";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom/cjs/react-router-dom";
 import { toast } from "react-toastify";
-///////
-import {
-  createFavourite,
-  filterFavouriteByUser,
-  getListBrand,
-  getListCategory,
-  getListProductByPage,
-  searchListProductByName,
-} from "../../actions";
+import { getListCategory, getListProductByPage } from "../../actions";
 import {
   addItemToCart,
   addToCart,
@@ -23,8 +15,7 @@ import {
   getCartByServer,
   increaseItemQuantity,
 } from "../../actions/cart";
-import MainFooter from "../../layouts/footer";
-import MainHeader from "../../layouts/header";
+import Layout from "../../layouts/Layout";
 
 function useQuery() {
   const { search } = useLocation();
@@ -32,14 +23,9 @@ function useQuery() {
 }
 
 const Shop_Page = () => {
-  // for Dispatch a fuction
-  const dispatch = useDispatch();
-  const alert = useAlert();
-
   useEffect(() => {
     dispatch(getCart());
-    
-    dispatch(getCartByServer())
+    dispatch(getCartByServer());
   }, []);
 
   // get all product on cart from redux store
@@ -63,434 +49,351 @@ const Shop_Page = () => {
       } else {
         itemQty = product.quantity;
       }
-      // alert.success('Already in cart!');
       toast.success("Sản phẩm đã có trong giỏ hàng");
       dispatch(
         increaseItemQuantity(productIndex, product, (itemQty = itemQty + 1))
       );
     } else {
       dispatch(addItemToCart(product));
-      // props.setAlert(
-      //   '{product.products_name} has been added to cart',
-      //   'success'
-      // );
-      // alert.success('Successfully added to cart!');
       toast.success("Thêm vào giỏ hàng thành công");
     }
     // to add the product in localstorage
-
     dispatch(addToCart());
   };
-  // add and update the cart button
-  // const addAndUpdatenTheCart = item => {
-  //   let product = item;
-  //   let productExists = false;
-  //   productsOnCart.forEach((p, idx) => {
-  //     if (product.id === p.id) {
-  //       productExists = true;
-  //       // assign product from redux cart
-  //       product = p;
-  //     }
-  //   });
-  //   addProductToCart(product);
-  //   // if (productExists) {
-  //   //   addProductToCart(product);
-  //   // } else {
-  //   //   addProductToCart(product);
-  //   // }
-
-  // };
-
-  const userId = useSelector((state) => state.auth.user?.id);
-  useEffect(() => {
-    dispatch(filterFavouriteByUser(userId));
-  }, [userId]);
-  const listFavourite = useSelector((state) => state.favourite.listFavourite);
-
-  const AddToWishList = async (item) => {
-    let productExists = false;
-    let productIndex = -1;
-    listFavourite.forEach((p, idx) => {
-      if (item.id === p.product?.id) {
-        productExists = true;
-        productIndex = idx;
-      }
-    });
-    if (productExists) {
-      // alert.success(`Already in Wishlist!`);
-    } else {
-      await dispatch(createFavourite({ userId: userId, productId: item.id }));
-      dispatch(filterFavouriteByUser(userId));
-
-      // alert.success("Successfully added to Wishlist!");
-    }
-  };
-
-  /////////////////////////////////////////////////////////////////
-
+  ///////////////////////
+  const dispatch = useDispatch();
   const history = useHistory();
   let query = useQuery();
-
-  const limit = 9;
-  // const [searchFeild, setSearchFeild] = useState("");
   // const [reRender, setReRender] = useState(true);
-  const [brandId, setBrandId] = useState(0);
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(0);
   const [categoryId, setCategoryId] = useState(0);
   const [sortBy, setSortBy] = useState("default");
-  const [currentPage, setCurrentPage] = useState(
-    Number(query.get("page")) || 1
-  );
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(9);
+  const [searchFeild, setSearchFeild] = useState(query.get("key"));
 
   useEffect(() => {
-    dispatch(
-      getListProductByPage(limit, currentPage - 1, categoryId, brandId, sortBy)
-    );
-  }, [currentPage, brandId, sortBy, categoryId]);
+    dispatch(getListCategory());
+  }, []);
+  const listCategory = useSelector((state) => state.category.listCategory);
 
-  // useEffect(() => {
-  //   if (keyBrandId === 0)
-  //     dispatch(getListProductByPage(limit, currentPage - 1));
-  //   else dispatch(searchListProductByName(searchFeild, limit, currentPage - 1));
-  // }, [currentPage]);
+  useEffect(() => {
+    const formData = new FormData();
+    formData.append("pageNumber", currentPage - 1);
+    formData.append("pageSize", 9);
+    dispatch(getListProductByPage(formData));
+  }, [currentPage]);
 
+  const productStore = useSelector((state) => state.product);
   const listProduct = useSelector((state) => state.product.listProduct);
   var iNewProducts = listProduct.map((product, index) => {
     return Object.assign({}, product, { quantity: 1 });
   });
 
-  const count = useSelector((state) => state.product.count);
-  var countPage = Math.ceil(count / limit);
-
-  const handlePageChange = (event, pageNumber) => {
-    console.log(pageNumber, "page");
-    setCurrentPage(pageNumber);
-    history.push(`?page=${pageNumber}`);
-  };
-
-  // const handleSearch = (e) => {
-  //   e.preventDefault();
-  //   console.log(searchFeild, "search");
-  //   dispatch(searchListProductByName(searchFeild, limit, 0));
-  //   history.push(`?search=${searchFeild}&page=${1}`);
-  //   setCurrentPage(1);
-  // };
-
-  const handleFilterByBrand = (brandId) => {
-    // dispatch(filterProductByBrand(brandId , limit, 0));
-    setBrandId(brandId);
-    // history.push(`?filterByBrandId=${brandId}&page=${1}`);
-    // setCurrentPage(1);
-  };
-
-  const handleFilterByCategory = (cateId) => {
-    // dispatch(filterProductByBrand(brandId , limit, 0));
-    // setBrandId(brandId);
-    // history.push(`?filterByBrandId=${brandId}&page=${1}`);
-    // setCurrentPage(1);
-  };
-
-  useEffect(() => {
-    dispatch(getListBrand());
-  }, []);
-
-  const listBrand = useSelector((state) => state.brand.listBrand);
-
-  useEffect(() => {
-    dispatch(getListCategory());
-  }, []);
-
-  const listCategory = useSelector((state) => state.category.listCategory);
-
-
-
-  const [searchFeild, setSearchFeild] = useState(query.get("key"));
   const handleSearch = (e) => {
     e.preventDefault();
-    console.log(searchFeild, "search");
-    // if (searchFeild === "") dispatch(getListArticleByPage(limit, currentPage - 1,categoryArticleId));
-    // else dispatch(searchListArticleByName(searchFeild, limit, currentPage - 1));
-    if (searchFeild !== "") history.push(`/shop/search?key=${searchFeild}`);
-    else history.push(`/shop`);
+    setCurrentPage(1);
+
+    const formData = new FormData();
+    formData.append("pageNumber", currentPage - 1);
+    formData.append("pageSize", pageSize);
+    formData.append("name", searchFeild);
+    dispatch(getListProductByPage(formData));
+  };
+  const handlePageChange = async (event, pageNumber) => {
+    console.log(pageNumber, "page");
+    setCurrentPage(pageNumber);
+  };
+  const [reRender, setReRender] = useState(true);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [priceRange, setPriceRange] = useState([0, 1200000]); // Giá trị mặc định
+  const handleCheckboxChange = (id) => {
+    // Kiểm tra xem ID đã tồn tại trong danh sách hay chưa
+    if (selectedIds.includes(id)) {
+      // Nếu tồn tại, loại bỏ ID khỏi danh sách
+      setSelectedIds(selectedIds.filter((selectedId) => selectedId !== id));
+    } else {
+      // Nếu không tồn tại, thêm ID vào danh sách
+      setSelectedIds([...selectedIds, id]);
+    }
   };
 
+  const handlePriceChange = (value) => {
+    setPriceRange(value);
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const formData = new FormData();
+      formData.append("pageNumber", currentPage - 1);
+      formData.append("pageSize", pageSize);
+      formData.append("categoryIds", selectedIds);
+      formData.append("minPrice", priceRange[0]);
+      formData.append("maxPrice", priceRange[1]);
+
+      // Gọi dispatch và đợi cho việc lấy dữ liệu hoàn tất
+      await dispatch(getListProductByPage(formData));
+    };
+
+    fetchData();
+  }, [priceRange, selectedIds, dispatch]);
+
   return (
-    <Fragment>
-      <MainHeader />
-
-      {/* <section className="bg-primary py-5">
-  <div className="container">
-    <h2 className="text-white">Cửa hàng</h2>
-  
-  </div> 
-</section> */}
-      {/*  */}
-
-      <section className="padding-y">
-        <div className="container">
-          <div className="row">
-            <aside className="col-lg-3">
-              <button
-                className="btn btn-outline-secondary mb-3 w-100  d-lg-none"
-                data-bs-toggle="collapse"
-                data-bs-target="#aside_filter"
-              >
-                Show filter
-              </button>
-              {/* ===== Card for sidebar filter ===== */}
-              <div
-                id="aside_filter"
-                className="collapse card d-lg-block mb-5 "
-                style={{ marginTop: "50px" }}
-              >
-                <article className="filter-group">
-                  <header className="card-header">
-                    <a
-                      href="#"
-                      className="title collapsed"
-                      data-bs-toggle="collapse"
-                      data-bs-target="#collapse_aside12"
-                      aria-expanded="false"
-                    >
-                      <i className="icon-control fa fa-chevron-down" /> Danh mục
-                    </a>
-                  </header>
-                  <div
-                    className="collapse show"
-                    id="collapse_aside12"
-                    style={{}}
-                  >
-                    <div className="card-body">
-                     
-                    <label className="form-check mb-2">
-                        <input
-                          className="form-check-input"
-                          type="radio"
-                          name="categoryId"
-                          defaultChecked
-                          onChange={(e)=>setCategoryId(0)}
-                          value={0}
-                        />
-                        <span className="form-check-label"> All </span>
-                      </label>
-                      {/* form-check end.// */}
-                     {listCategory.map((element)=>
-                     <label className="form-check mb-2">
-                     <input
-                       className="form-check-input"
-                       type="radio"
-                       name="categoryId"
-                      onChange={(e)=>setCategoryId(e.target.value)}
-                      value={element.id}
-                       
-                     />
-                     <span className="form-check-label"> {element.name} </span>
-                   </label>
-                     )}
+    <Layout>
+      <main className="main">
+        <nav aria-label="breadcrumb" className="breadcrumb-nav mb-2">
+          <div className="container">
+            <ol className="breadcrumb">
+              <li className="breadcrumb-item">
+                <a href="index.html">Home</a>
+              </li>
+              <li className="breadcrumb-item active">
+                <a href="#">Shop</a>
+              </li>
+            </ol>
+          </div>
+          {/* End .container */}
+        </nav>
+        {/* End .breadcrumb-nav */}
+        <div className="page-content">
+          <div className="container">
+            <div className="row">
+              <div className="col-lg-9">
+                <div className="toolbox">
+                  <div className="toolbox-left">
+                    <div className="toolbox-info">
+                      {/* Showing <span>9 of 56</span> Products */}
                     </div>
+                    {/* End .toolbox-info */}
                   </div>
-                  {/* collapse.// */}
-                </article>
-                {/* filter-group // */}
-                <article className="filter-group">
-                  <header className="card-header">
-                    <a
-                      href="#"
-                      className="title collapsed"
-                      data-bs-toggle="collapse"
-                      data-bs-target="#collapse_aside1"
-                      aria-expanded="false"
-                    >
-                      <i className="icon-control fa fa-chevron-down" /> Thương
-                      hiệu
-                    </a>
-                  </header>
-                  <div
-                    className="collapse show"
-                    id="collapse_aside1"
-                    style={{}}
-                  >
-                    <div className="card-body">
-                     
-                     <label className="form-check mb-2">
-                         <input
-                           className="form-check-input"
-                           type="radio"
-                           name="brandId"
-                           defaultChecked
-                           value={0}
-                           onChange={(e)=>setBrandId(0)}
-                         />
-                         <span className="form-check-label"> All </span>
-                       </label>
-                       {/* form-check end.// */}
-                      {listBrand.map((element)=>
-                      <label className="form-check mb-2">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="brandId"
-                        onChange={(e)=>setBrandId(e.target.value)}
-                        value={element.id}
-                      />
-                      <span className="form-check-label"> {element.name} </span>
-                    </label>
-                      )}
-                     </div>
-                    {/* card-body.// */}
+                  {/* End .toolbox-left */}
+                  <div className="toolbox-right">
+                    <div className="toolbox-sort">
+                      <label htmlFor="sortby">Sort by:</label>
+                      <div className="select-custom">
+                        <select
+                          name="sortby"
+                          id="sortby"
+                          className="form-control"
+                        >
+                          <option value="popularity" selected="selected">
+                            Most Popular
+                          </option>
+                          <option value="rating">Most Rated</option>
+                          <option value="date">Date</option>
+                        </select>
+                      </div>
+                    </div>
+                    {/* End .toolbox-sort */}
                   </div>
-                  {/* collapse.// */}
-                </article>
-                {/* filter-group // */}
-              </div>
-              {/* card.// */}
-              {/* ===== Card for sidebar filter .// ===== */}
-            </aside>
-            {/* col .// */}
-            <main className="col-lg-9">
-              <header className="d-sm-flex align-items-center border-bottom mb-4 pb-3">
-
-              {/* <div className="col-lg-5 col-md-12 col-12">
-                <form action="#" className onSubmit={handleSearch}>
-                  <div className="input-group">
-                    <input
-                      type="search"
-                      className="form-control"
-                      style={{ width: "55%" }}
-                      placeholder="Tìm kiếm sản phẩm"
-                      name="searchFeild"
-                      id="searchFeild"
-                      value={searchFeild}
-                      onChange={(e) => setSearchFeild(e.target.value)}
-                    />
-                    
-                    <button className="btn btn-warning"  type="submit">
-                      <i className="fa fa-search" />
-                    </button>
-                  </div>
-                  
-                </form>
-              </div> */}
-
-
-                {/* <strong className="d-block py-2">32 Items found </strong> */}
-                <div className="ms-auto">
-                  <select
-                    className="form-select d-inline-block w-auto"
-                    onChange={(e) => setSortBy(e.target.value)}
-                  >
-                    <option value={"createdAt"}>Cũ nhất</option>
-                    <option value={"createdAtDESC"}>Mới nhất</option>
-                    <option value={"PriceASC"}>Giá từ thấp đến cao</option>
-                    <option value={"PriceDESC"}>Giá từ cao đến thấp</option>
-                  </select>
-                  {/* <div className="btn-group">
-              <a href="#" className="btn btn-light" data-bs-toggle="tooltip" title data-bs-original-title="List view"> 
-                <i className="fa fa-bars" />
-              </a>
-              <a href="#" className="btn btn-light active" data-bs-toggle="tooltip" title data-bs-original-title="Grid view"> 
-                <i className="fa fa-th" />
-              </a>
-            </div> */}
+                  {/* End .toolbox-right */}
                 </div>
-              </header>
-              {/* ========= content items ========= */}
-              <div className="row">
-                {iNewProducts !== undefined && iNewProducts.length > 0
-                  ? iNewProducts.map((product, index) => {
-                    if(product.isActive == true)
-                      return (
-                        <div className="col-lg-4 col-md-6 col-sm-6" key={index}>
-                          <figure className="card card-product-grid">
-                            <div className="img-wrap">
-                            {product.isHot == true ? <span className="topbar"> <span className="badge bg-danger"> Hot </span> </span> : null}
-                              <img src={product.image} />
+                {/* End .toolbox */}
+                <div className="products mb-3">
+                  <div className="row justify-content-center">
+                    {iNewProducts?.map((item) => (
+                      <div className="col-6 col-md-4 col-lg-4">
+                        <div className="product">
+                          <figure className="product-media">
+                            <Link to={`/product-detail/${item.id}`}>
+                              <img
+                                src={item.images[0]?.imagePath}
+                                alt="Product image"
+                                className="product-image"
+                              />
+                            </Link>
+                            {/* <div className="product-action-vertical">
+      <a href="#" className="btn-product-icon btn-wishlist btn-expandable">
+        <span>add to wishlist</span>
+      </a>
+      <a href="#" className="btn-product-icon btn-compare" title="Compare">
+        <span>Compare</span>
+      </a>
+      <a
+        href="#"
+        className="btn-product-icon btn-quickview"
+        title="Quick view"
+      >
+        <span>Quick view</span>
+      </a>
+    </div> */}
+                            {/* End .product-action-vertical */}
+                            <div className="product-action">
+                              <button
+                                href="#"
+                                className="btn-product btn-cart"
+                                title="Add to cart"
+                                onClick={() => addProductToCart(item)}
+                              >
+                                <span>Thêm vào giỏ</span>
+                              </button>
                             </div>
-                            <figcaption className="info-wrap border-top">
-                              <div className="price-wrap">
-                                <strong className="price">
-                                  {product.promotionPrice} VNĐ
-                                </strong>
-                                <del className="price-old">
-                                  {product.unitPrice} VNĐ
-                                </del>
-                              </div>
-                              {/* price-wrap.// */}
-                              <p
-                                style={{
-                                  cursor: "pointer",
-                                  textOverflow: "ellipsis",
-                                }}
-                                className="title mb-2 name-product"
-                                onClick={() => {
-                                  history.push(`/product-detail/${product.id}`);
-                                }}
-                              >
-                                {product.name}
-                              </p>
-                              <button
-                                className="btn btn-primary me-2"
-                                onClick={() => addProductToCart(product)}
-                              >
-                                Thêm vào giỏ
-                              </button>
-                              <button
-                                className="btn btn-light btn-icon"
-                                onClick={() => AddToWishList(product)}
-                              >
-                                <i className="fa fa-heart" />
-                              </button>
-                            </figcaption>
+                            {/* End .product-action */}
                           </figure>
+                          {/* End .product-media */}
+                          <div className="product-body">
+                            <div className="product-cat">
+                              <a href="#">{item.category.name}</a>
+                            </div>
+                            {/* End .product-cat */}
+                            <h3 className="product-title">
+                              <Link to={`/product-detail/${item.id}`}>
+                                {item.name}
+                              </Link>
+                            </h3>
+                            {/* End .product-title */}
+                            <div className="product-price">
+                              {item.price} VNĐ
+                            </div>
+                            {/* End .product-price */}
+                            <div className="ratings-container">
+                              <div className="ratings">
+                                <div
+                                  className="ratings-val"
+                                  style={{ width: "0%" }}
+                                />
+                                {/* End .ratings-val */}
+                              </div>
+                              {/* End .ratings */}
+                              {/* <span className="ratings-text">( 6 Reviews )</span> */}
+                            </div>
+                            {/* End .rating-container */}
+                          </div>
+                          {/* End .product-body */}
                         </div>
-                      ); else return null;
-                    })
-                  : "null"}
-              </div>
-              {/* row end.// */}
-              <hr />
-              <footer className="d-flex mt-4">
-                {/* <div>
-            <a href="javascript: history.back()" className="btn btn-light"> « Go back</a>
-          </div>
-          <nav className="ms-3">
-            <ul className="pagination">
-              <li className="page-item"><a className="page-link" href="#">1</a></li>
-              <li className="page-item active" aria-current="page">
-                <span className="page-link">2</span>
-              </li>
-              <li className="page-item"><a className="page-link" href="#">3</a></li>
-              <li className="page-item">
-                <a className="page-link" href="#">Next</a>
-              </li>
-            </ul>
-          </nav> */}
-                <Stack spacing={2}>
-                  <Pagination
-                    count={countPage}
-                    color="primary"
-                    page={currentPage}
-                    onChange={handlePageChange}
-                    // renderItem={(item) => (
-                    //   <PaginationItem
-                    //     component={Link}
-                    //     to={`/products/list${item.page === 1 ? '' : `?page=${item.page}`}`}
-                    //     {...item}
-                    //   />
-                    // )}
-                  />
-                </Stack>
-              </footer>
-              {/* ========= content items .// ========= */}
-            </main>
-            {/* col .// */}
-          </div>
-          {/* row .// */}
-        </div>
-        {/* container .//  */}
-      </section>
 
-      <MainFooter />
-    </Fragment>
+                        {/* End .product */}
+                      </div>
+                    ))}
+
+                    {/* End .col-sm-6 col-lg-4 */}
+                  </div>
+                  {/* End .row */}
+                </div>
+                {/* End .products */}
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "end",
+                    marginTop: "16px",
+                  }}
+                >
+                  <Stack spacing={2}>
+                    <Pagination
+                      count={productStore.totalPages}
+                      color="primary"
+                      page={currentPage}
+                      onChange={handlePageChange}
+                    />
+                  </Stack>
+                </div>
+              </div>
+              {/* End .col-lg-9 */}
+              <aside className="col-lg-3 order-lg-first">
+                <div className="sidebar sidebar-shop">
+                  <div className="widget widget-clean">
+                    <label>Filters:</label>
+                    <a href="#" className="sidebar-filter-clear">
+                      Clean All
+                    </a>
+                  </div>
+                  {/* End .widget widget-clean */}
+                  <div className="widget widget-collapsible">
+                    <h3 className="widget-title">
+                      <a
+                        data-toggle="collapse"
+                        href="#"
+                        role="button"
+                        aria-expanded="true"
+                        aria-controls="widget-1"
+                      >
+                        Danh mục sản phẩm
+                      </a>
+                    </h3>
+                    {/* End .widget-title */}
+                    <div className="collapse show" id="widget-1">
+                      <div className="widget-body">
+                        <div className="filter-items filter-items-count">
+                          {listCategory?.map((item) => (
+                            <div key={item.id} className="filter-item">
+                              <div className="custom-control custom-checkbox">
+                                <input
+                                  type="checkbox"
+                                  className="custom-control-input"
+                                  id={item.id}
+                                  checked={selectedIds.includes(item.id)}
+                                  onChange={() => handleCheckboxChange(item.id)}
+                                />
+                                <label
+                                  className="custom-control-label"
+                                  htmlFor={item.id}
+                                >
+                                  {item.name}
+                                </label>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        {/* End .filter-items */}
+                      </div>
+                      {/* End .widget-body */}
+                    </div>
+                    {/* End .collapse */}
+                  </div>
+                  {/* End .widget */}
+                  <div className="widget widget-collapsible">
+                    <h3 className="widget-title">
+                      <a
+                        data-toggle="collapse"
+                        href="#"
+                        role="button"
+                        aria-expanded="true"
+                        aria-controls="widget-5"
+                      >
+                        Price
+                      </a>
+                    </h3>
+                    {/* End .widget-title */}
+                    <div className="collapse show" id="widget-5">
+                      <div className="filter-price-text">
+                        Price Range:
+                        <span id="filter-price-range">
+                          {priceRange[0]}VNĐ - {priceRange[1]}VNĐ
+                        </span>
+                      </div>
+
+                      <Slider
+                        min={0}
+                        max={1200000}
+                        range
+                        value={priceRange}
+                        onChange={handlePriceChange}
+                        marks={{
+                          0: "0",
+                          300000: "300.000",
+                          600000: "600.000",
+                          900000: "900.000",
+                          1200000: "1200.000",
+                        }}
+                        step={300000}
+                      />
+                    </div>
+                    {/* End .collapse */}
+                  </div>
+                  {/* End .widget */}
+                </div>
+                {/* End .sidebar sidebar-shop */}
+              </aside>
+              {/* End .col-lg-3 */}
+            </div>
+            {/* End .row */}
+          </div>
+          {/* End .container */}
+        </div>
+        {/* End .page-content */}
+      </main>
+    </Layout>
   );
 };
 

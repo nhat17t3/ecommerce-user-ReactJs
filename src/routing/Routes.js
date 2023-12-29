@@ -5,7 +5,10 @@ import { Route, Switch } from "react-router-dom";
 import PrivateRoute from "../HOC/PrivateRoute";
 import ArticleDetail from "../pages/ArticleDetail";
 import CartPage from "../pages/cart/CartPage";
-import { default as ChangePassword, default as Change_Password } from "../pages/Changepassword/Change_Password";
+import {
+  default as Change_Password,
+  default as ChangePassword,
+} from "../pages/Changepassword/Change_Password";
 import Checkout from "../pages/checkout/Checkout";
 import Contact from "../pages/Contact";
 import ListArticle from "../pages/ListArticle";
@@ -15,15 +18,9 @@ import Order_Detail from "../pages/order-detail/Order_Detail";
 import Orders from "../pages/order/Orders";
 import ProductPage from "../pages/product_detail/ProductPage";
 import Profile from "../pages/profile/Profile";
-import Shop_Search from "../pages/shop search/ShopPage";
 import Shop_Page from "../pages/shop/ShopPage";
 import SignupPage from "../pages/signup/SignupPage";
 import Thankyou from "../pages/thank-you/Thankyou";
-import WhiteList from "../pages/wishlist/Wishlist";
-
-
-
-
 
 // set alert time and position
 const options = {
@@ -40,22 +37,32 @@ const Routes = () => {
         <Route exact path="/signin" component={Login_Page} />
         <Route exact path="/signup" component={SignupPage} />
         <Route exact path="/shop" component={Shop_Page} />
-        <Route exact path="/shop/search" component={Shop_Search} />
-        <Route exact path='/product-detail/:productId' component={ProductPage} />
-        <Route exact path='/cart-page' component={CartPage} />
-        <PrivateRoute exact path='/checkout' component={Checkout} />
-        <PrivateRoute exact path='/thankyou' component={Thankyou} />
+        <Route
+          exact
+          path="/product-detail/:productId"
+          component={ProductPage}
+        />
+        <Route exact path="/cart-page" component={CartPage} />
+        <Route exact path="/checkout" component={Checkout} />
+        <Route exact path="/thankyou" component={Thankyou} />
 
-        <PrivateRoute exact path='/orders' component={Orders} />
-        <PrivateRoute exact path='/order-detail' component={Order_Detail} />
+        <Route exact path="/orders" component={Orders} />
+        <Route exact path="/order-detail" component={Order_Detail} />
         {/* <PrivateRoute exact path='/shipping-address' component={Shipping_Address} /> */}
-        <PrivateRoute exact path='/change-password' component={Change_Password} />
-        <PrivateRoute exact path='/profile' component={Profile} />
-        <PrivateRoute exact path='/Change_Password' component={ChangePassword} />
-        <PrivateRoute exact path='/wishlist' component={WhiteList} />
+        <Route
+          exact
+          path="/change-password"
+          component={Change_Password}
+        />
+        <Route exact path="/profile" component={Profile} />
+        {/* <Route
+          exact
+          path="/Change_Password"
+          component={ChangePassword}
+        /> */}
 
         <Route exact path="/blog" component={ListArticle} />
-        <Route exact path='/blog-detail/:blogId' component={ArticleDetail} />
+        <Route exact path="/blog-detail/:blogId" component={ArticleDetail} />
 
         <Route exact path="/contact" component={Contact} />
       </Switch>

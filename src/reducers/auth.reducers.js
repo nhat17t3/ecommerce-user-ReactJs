@@ -1,7 +1,7 @@
 import { authConstants } from "../constants/auth.constants";
 
 const initState = {
-  token: null,
+  accessToken: null,
   user: {},
   authenticate: false,
   authenticating: false,
@@ -24,16 +24,17 @@ export default (state = initState, action) => {
       state = {
         ...state,
         // user: action.payload.user,
-        token: action.payload.token,
+        accessToken: action.payload.accessToken,
         loading: false,
         authenticate: true,
         authenticating: false,
+        message: action.payload.message
       };
       break;
     case authConstants.LOGIN_FAILURE:
       state = {
         ...initState,
-        error: action.payload.error,
+        message: action.payload.message,
       };
       break;
     // case authConstants.UPDATE_INFORMATION_SUCCESS:
@@ -46,25 +47,26 @@ export default (state = initState, action) => {
     //   };
     //   break;
 
-    // case authConstants.LOGOUT_REQUEST:
-    //   state = {
-    //     ...state,
-    //     loading: true,
-    //   };
-    //   break;
+    case authConstants.LOGOUT_REQUEST:
+      state = {
+        ...state,
+        loading: true,
+      };
+      break;
     case authConstants.LOGOUT_SUCCESS:
       state = {
         ...initState,
-        message: "Logout Success",
+        message: action.payload.message,
+        authenticate: false,
       };
       break;
-    // case authConstants.LOGOUT_FAILURE:
-    //   state = {
-    //     ...state,
-    //     error: action.payload.error,
-    //     loading: false,
-    //   };
-    //   break;
+    case authConstants.LOGOUT_FAILURE:
+      state = {
+        ...state,
+        message: action.payload.message,
+        loading: false,
+      };
+      break;
     case authConstants.REGISTER_REQUEST:
       state = {
         ...state,
@@ -97,13 +99,15 @@ export default (state = initState, action) => {
       state = {
         ...state,
         user: action.payload.user,
+        authenticate: true,
         loading: false,
       };
       break;
     case authConstants.GET_INFORMATION_FAILURE:
       state = {
         ...state,
-        error: action.payload.error,
+        message: action.payload.message,
+        // authenticate: false,
         loading: false,
       };
       break;

@@ -78,20 +78,20 @@ export const getCartByServer = () => {
     });
     const res = await axios.get(`/api/cart/update?products=${a}`);
 
-    if (res.status === 200) {
-      const { dataResponse, message } = res.data;
-      dispatch({
-        type: GET_CART_BY_SERVER,
-        payload: {
-          dataResponse: dataResponse,
-          message: message,
-        },
-      });
+    // if (res.status === 200) {
+    //   const { dataResponse, message } = res.data;
+    //   dispatch({
+    //     type: GET_CART_BY_SERVER,
+    //     payload: {
+    //       dataResponse: dataResponse,
+    //       message: message,
+    //     },
+    //   });
 
-      // toast("get cart success");
-    } else {
+    //   // toast("get cart success");
+    // } else {
      
-      toast("get cart error");
-    }
+    //   toast("get cart error");
+    // }
   };
 };

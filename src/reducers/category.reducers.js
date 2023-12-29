@@ -2,6 +2,7 @@ import { categoryConstants } from "../constants/category.constants";
 
 const initState = {
   listCategory: [],
+  category: {},
   loading: false,
   message: "",
 };
@@ -18,7 +19,7 @@ export default (state = initState, action) => {
       state = {
         ...state,
         loading: false,
-        // message:action.payload.message,
+        message:action.payload.message,
         listCategory: action.payload.dataResponse,
       };
       break;
@@ -40,6 +41,7 @@ export default (state = initState, action) => {
       state = {
         ...state,
         message: action.payload.message,
+        category: action.payload.dataResponse,
         loading: false,
       };
       break;
@@ -60,6 +62,7 @@ export default (state = initState, action) => {
       state = {
         ...state,
         loading: false,
+        category: action.payload.dataResponse,
         message: action.payload.message,
       };
       break;

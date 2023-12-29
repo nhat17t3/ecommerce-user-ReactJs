@@ -8,41 +8,29 @@ export const login = (user) => {
       type: authConstants.LOGIN_REQUEST,
     });
 
-    const res = await axios.post(`/api/auth/signin`, {
+    const res = await axios.post(`/api/auth/login`, {
       ...user,
     });
 
-    try {
-      if (res.status === 201) {
-        const token = res.data.dataResponse;
-        localStorage.setItem("token-user", token);
-
+    if (res.status === 200) {
+        localStorage.setItem("accessToken", res.data.result.accessToken);
+        localStorage.setItem("refreshToken", res.data.result.refreshToken);
         dispatch({
           type: authConstants.LOGIN_SUCCESS,
           payload: {
-            token: token,
+            accessToken: res.data.result.accessToken,
+            message:res.data.message
           },
         });
-        dispatch(getInformation({ token }));
-      } else {
-        
+
+        dispatch(getInformation({accessToken: res.data.result.accessToken}));
+    } else {
           dispatch({
             type: authConstants.LOGIN_FAILURE,
             payload: {
-              error: "Sai tên đăng nhập hoặc mật khẩu",
+              message: res.data.message
             },
           });
-      toast.error("Sai tên đăng nhập hoặc mật khẩu")
-
-        
-      }
-    } catch (error) {
-      dispatch({
-        type: authConstants.LOGIN_FAILURE,
-        payload: {
-          error: "Server error",
-        },
-      });
     }
   };
 };
@@ -72,21 +60,21 @@ export const login = (user) => {
 
 export const logout = () => {
   return async (dispatch) => {
-    // dispatch({ type: authConstants.LOGOUT_REQUEST });
-    // const res = await axios.post(`/admin/signout`);
-    // console.log("Logout",res)
-    // if (res.status === 200) {
-    //   localStorage.clear();
-    //   dispatch({ type: authConstants.LOGOUT_SUCCESS });
-    // } else {
-    //   dispatch({
-    //     type: authConstants.LOGOUT_FAILURE,
-    //     payload: res.data.error,
-    //   });
-    // }
+    dispatch({ type: authConstants.LOGOUT_REQUEST });
+    const refreshToken= localStorage.getItem("refreshToken");
+    const res = await axios.post(`/api/auth/logout?refreshToken=${refreshToken}`);
+    if (res.status === 200) {
+      localStorage.clear();
+      dispatch({ type: authConstants.LOGOUT_SUCCESS });
+    } else {
+      dispatch({
+        type: authConstants.LOGOUT_FAILURE,
+        payload: {message : res.data.message },
+      });
+    }
 
-    localStorage.removeItem("token-user");
-    dispatch({ type: authConstants.LOGOUT_SUCCESS });
+    // localStorage.clear();
+    // dispatch({ type: authConstants.LOGOUT_SUCCESS });
   };
 };
 
@@ -95,29 +83,28 @@ export const signup = (user) => {
     dispatch({
       type: authConstants.REGISTER_REQUEST,
     });
-    const res = await axios.post(`/api/auth/signup`, {
+    const res = await axios.post(`/api/auth/register`, {
       ...user,
     });
 
-    if (res.status === 201) {
+    if (res.status === 200) {
       // dispatch(getListAdmin());
       const { message } = res.data;
       dispatch({
         type: authConstants.REGISTER_SUCCESS,
         payload: { message },
       });
-      toast.success("Chúc mừng bạn đã đăng kí thành công")
     } else {
-      dispatch({
-        type: authConstants.REGISTER_FAILURE,
-        payload: { error: res.data.message },
-      });
-      toast.error(`${res.data.message}`)
+        dispatch({
+          type: authConstants.REGISTER_FAILURE,
+          payload: { error: res.data.message },
+        });
+      
     }
   };
 };
 
-export const changeInformation = (id, data) => {
+export const changeInformation = (id,data) => {
   return async (dispatch) => {
     dispatch({ type: authConstants.CHANGE_INFORMATION_REQUEST });
 
@@ -125,16 +112,14 @@ export const changeInformation = (id, data) => {
     const res = await axios.put(`/api/users/${id}`, data);
 
     if (res.status === 200) {
-      const { message, dataResponse } = res.data;
+      const { message,result } = res.data;
       dispatch({
         type: authConstants.CHANGE_INFORMATION_SUCCESS,
         payload: {
           message: message,
-          user: dataResponse,
+          user: result
         },
       });
-
-      toast.success("cập nhật thông tin thành công")
 
       // dispatch(getInformation());
     } else {
@@ -145,7 +130,6 @@ export const changeInformation = (id, data) => {
           error: message,
         },
       });
-      toast.error("cập nhật thông tin thất bại")
     }
   };
 };
@@ -154,15 +138,15 @@ export const getInformation = (token) => {
   return async (dispatch) => {
     dispatch({ type: authConstants.GET_INFORMATION_REQUEST });
 
-    const res = await axios.post("/api/auth/getInfor", token);
+    const res = await axios.post("/api/auth/getMyUserInfor", token);
 
     if (res.status === 200) {
-      const user = res.data.dataResponse;
+      const user = res.data.result;
       dispatch({
         type: authConstants.GET_INFORMATION_SUCCESS,
         payload: {
           user: user,
-          message: res.data.message,
+          
         },
       });
     } else {
@@ -170,7 +154,7 @@ export const getInformation = (token) => {
       dispatch({
         type: authConstants.GET_INFORMATION_FAILURE,
         payload: {
-          error: message,
+          message: message,
         },
       });
     }
@@ -201,6 +185,39 @@ export const changePassword = (pass) => {
         },
       });
       toast.error("cập nhật mật khẩu thất bại")
+    }
+  };
+};
+
+export const loginGoogle = (user) => {
+  return async (dispatch) => {
+    dispatch({
+      type: authConstants.LOGIN_REQUEST,
+    });
+
+    const res = await axios.post(`/api/auth/oauth2/login-success`, {
+      ...user,
+    });
+
+    if (res.status === 200) {
+        localStorage.setItem("accessToken", res.data.result.accessToken);
+        localStorage.setItem("refreshToken", res.data.result.refreshToken);
+        dispatch({
+          type: authConstants.LOGIN_SUCCESS,
+          payload: {
+            accessToken: res.data.result.accessToken,
+            message:res.data.message
+          },
+        });
+
+        dispatch(getInformation({accessToken: res.data.result.accessToken}));
+    } else {
+          dispatch({
+            type: authConstants.LOGIN_FAILURE,
+            payload: {
+              message: res.data.message
+            },
+          });
     }
   };
 };

@@ -19,7 +19,7 @@ export default (state = initState, action) => {
       state = {
         ...state,
         loading: false,
-        // message:action.payload.message,
+        message:action.payload.message,
         listCategoryArticle: action.payload.dataResponse,
       };
       break;
@@ -30,31 +30,7 @@ export default (state = initState, action) => {
         message: action.payload.message,
       };
       break;
-    //
-    
-    //
-    case categoryArticleConstants.GET_CATEGORY_ARTICLE_BY_ID_REQUEST:
-      state = {
-        ...state,
-        loading: true,
-      };
-      break;
-    case categoryArticleConstants.GET_CATEGORY_ARTICLE_BY_ID_SUCCESS:
-      state = {
-        ...state,
-        loading: false,
-        // message:action.payload.message,
-        categoryArticle: action.payload.dataResponse,
-      };
-      break;
-    case categoryArticleConstants.GET_CATEGORY_ARTICLE_BY_ID_FAILURE:
-      state = {
-        ...state,
-        loading: false,
-        message: action.payload.message,
-      };
-      break;
-
+      
     case categoryArticleConstants.ADD_CATEGORY_ARTICLE_REQUEST:
       state = {
         ...state,
@@ -65,6 +41,7 @@ export default (state = initState, action) => {
       state = {
         ...state,
         message: action.payload.message,
+        categoryArticle: action.payload.dataResponse,
         loading: false,
       };
       break;
@@ -85,6 +62,7 @@ export default (state = initState, action) => {
       state = {
         ...state,
         loading: false,
+        categoryArticle: action.payload.dataResponse,
         message: action.payload.message,
       };
       break;

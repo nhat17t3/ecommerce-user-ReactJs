@@ -1,0 +1,43 @@
+a, p, span {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.menu.sf-arrows .sf-with-ul::after {
+    content: none;
+}
+.btn-product {
+    padding-top: 1.05rem;
+    padding-bottom: 1.05rem;
+    color: #39f;
+    background-color: transparent;
+    text-transform: uppercase;
+    border-radius: 0.2rem;
+    border: 0.1rem solid #39f;
+}
+.btn-product:before {
+    display: inline-block;
+    margin-top: -0.1rem;
+}
+.btn-product:before {
+    margin-right: 0.6rem;
+}
+.btn-product span {
+    color: #39f;
+}
+.product-action {
+    left: 2rem;
+    right: 2rem;
+    /* transform: translateY(0); */
+}
+.btn-product:hover, .btn-product:focus {
+    color: #fff;
+    background-color: #39f;
+    border-color: #39f;
+    text-decoration: none;
+}
+
+.btn-product:hover span {
+    color: #fff;
+    text-decoration: none;
+    box-shadow: none;
+}

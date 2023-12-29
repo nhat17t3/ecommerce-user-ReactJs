@@ -5,6 +5,10 @@ const initState = {
   order: {},
   loading: false,
   message: "",
+  pageNumber: 0,
+  pageSize :5,
+  totalElements: 0,
+  totalPages: 0,
 };
 
 export default (state = initState, action) => {
@@ -19,8 +23,13 @@ export default (state = initState, action) => {
       state = {
         ...state,
         loading: false,
-        // message:action.payload.message,
+        message:action.payload.message,
         listOrder: action.payload.dataResponse,
+        pageNumber: action.payload.pageNumber,
+        pageSize: action.payload.pageSize,
+        totalElements: action.payload.totalElements,
+        totalPages: action.payload.totalPages,
+
       };
       break;
     case orderConstants.GET_ORDER_BY_PAGE_FAILURE:
@@ -31,71 +40,72 @@ export default (state = initState, action) => {
       };
       break;
     //
-    case orderConstants.SEARCH_ORDER_BY_NAME_REQUEST:
-      state = {
-        ...state,
-        loading: true,
-      };
-      break;
-    case orderConstants.SEARCH_ORDER_BY_NAME_SUCCESS:
-      state = {
-        ...state,
-        loading: false,
-        // message:action.payload.message,
-        listOrder: action.payload.dataResponse,
-      };
-      break;
-    case orderConstants.SEARCH_ORDER_BY_NAME_FAILURE:
-      state = {
-        ...state,
-        loading: false,
-        message: action.payload.message,
-      };
-      break;
-    //
-    case orderConstants.FILTER_ORDER_BY_STATUS_REQUEST:
-      state = {
-        ...state,
-        loading: true,
-      };
-      break;
-    case orderConstants.FILTER_ORDER_BY_STATUS_SUCCESS:
-      state = {
-        ...state,
-        loading: false,
-        // message:action.payload.message,
-        listOrder: action.payload.dataResponse,
-      };
-      break;
-    case orderConstants.FILTER_ORDER_BY_STATUS_FAILURE:
-      state = {
-        ...state,
-        loading: false,
-        message: action.payload.message,
-      };
-      break;
-    //
-    case orderConstants.FILTER_ORDER_BY_USER_REQUEST:
-      state = {
-        ...state,
-        loading: true,
-      };
-      break;
-    case orderConstants.FILTER_ORDER_BY_USER_SUCCESS:
-      state = {
-        ...state,
-        loading: false,
-        // message:action.payload.message,
-        listOrder: action.payload.dataResponse,
-      };
-      break;
-    case orderConstants.FILTER_ORDER_BY_USER_FAILURE:
-      state = {
-        ...state,
-        loading: false,
-        message: action.payload.message,
-      };
-      break;
+    // case orderConstants.SEARCH_ORDER_BY_NAME_REQUEST:
+    //   state = {
+    //     ...state,
+    //     loading: true,
+    //   };
+    //   break;
+    // case orderConstants.SEARCH_ORDER_BY_NAME_SUCCESS:
+    //   state = {
+    //     ...state,
+    //     loading: false,
+    //     // message:action.payload.message,
+    //     listOrder: action.payload.dataResponse,
+
+    //   };
+    //   break;
+    // case orderConstants.SEARCH_ORDER_BY_NAME_FAILURE:
+    //   state = {
+    //     ...state,
+    //     loading: false,
+    //     message: action.payload.message,
+    //   };
+    //   break;
+    // //
+    // case orderConstants.FILTER_ORDER_BY_BRAND_REQUEST:
+    //   state = {
+    //     ...state,
+    //     loading: true,
+    //   };
+    //   break;
+    // case orderConstants.FILTER_ORDER_BY_BRAND_SUCCESS:
+    //   state = {
+    //     ...state,
+    //     loading: false,
+    //     // message:action.payload.message,
+    //     listOrder: action.payload.dataResponse,
+    //   };
+    //   break;
+    // case orderConstants.FILTER_ORDER_BY_CATEGORY_FAILURE:
+    //   state = {
+    //     ...state,
+    //     loading: false,
+    //     message: action.payload.message,
+    //   };
+    //   break;
+    // //
+    // case orderConstants.FILTER_ORDER_BY_CATEGORY_REQUEST:
+    //   state = {
+    //     ...state,
+    //     loading: true,
+    //   };
+    //   break;
+    // case orderConstants.FILTER_ORDER_BY_CATEGORY_SUCCESS:
+    //   state = {
+    //     ...state,
+    //     loading: false,
+    //     // message:action.payload.message,
+    //     listOrder: action.payload.dataResponse,
+    //   };
+    //   break;
+    // case orderConstants.FILTER_ORDER_BY_CATEGORY_FAILURE:
+    //   state = {
+    //     ...state,
+    //     loading: false,
+    //     message: action.payload.message,
+    //   };
+    //   break;
     //
     case orderConstants.GET_ORDER_BY_ID_REQUEST:
       state = {
@@ -107,7 +117,7 @@ export default (state = initState, action) => {
       state = {
         ...state,
         loading: false,
-        // message:action.payload.message,
+        message:action.payload.message,
         order: action.payload.dataResponse,
       };
       break;
@@ -129,6 +139,7 @@ export default (state = initState, action) => {
       state = {
         ...state,
         message: action.payload.message,
+        order: action.payload.dataResponse,
         loading: false,
       };
       break;
@@ -179,6 +190,46 @@ export default (state = initState, action) => {
         message: action.payload.message,
       };
       break;
+      case orderConstants.CREATE_TRACKING_ORDER_REQUEST:
+        state = {
+          ...state,
+          loading: true,
+        };
+        break;
+      case orderConstants.CREATE_TRACKING_ORDER_SUCCESS:
+        state = {
+          ...state,
+          loading: false,
+          messages: action.payload.message,
+        };
+        break;
+      case orderConstants.CREATE_TRACKING_ORDER_FAILURE:
+        state = {
+          ...state,
+          loading: false,
+          message: action.payload.message,
+        };
+        break;
+        case orderConstants.GET_ALL_STATUS_TRACKING_ORDER_REQUEST:
+          state = {
+            ...state,
+            loading: true,
+          };
+          break;
+        case orderConstants.GET_ALL_STATUS_TRACKING_ORDER_SUCCESS:
+          state = {
+            ...state,
+            loading: false,
+            messages: action.payload.message,
+          };
+          break;
+        case orderConstants.GET_ALL_STATUS_TRACKING_ORDER_FAILURE:
+          state = {
+            ...state,
+            loading: false,
+            message: action.payload.message,
+          };
+          break;
   }
   return state;
 };

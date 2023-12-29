@@ -1,164 +1,246 @@
-import React, { Fragment, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { filterOrderByUser, logout, updateOrder } from '../../actions';
-import Main_Footer from '../../layouts/footer';
-import Main_Header from '../../layouts/header';
-import Moment from "react-moment";
+import React, { Fragment, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { getUserById, updateOrderStatus } from "../../actions";
+import Main_Footer from "../../layouts/footer";
+import Main_Header from "../../layouts/header";
 
 const Orders = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
 
-
   useEffect(() => {
-    dispatch(filterOrderByUser(+user.id));
-  }, [user]);
-  const listOrder = useSelector((state) => state.order1.listOrder);
+    dispatch(getUserById(+user.id));
+  }, []);
+  const findItem = useSelector((state) => state.user.user);
+  const listOrder = findItem.orders;
 
   const handleCancel = async (orderId) => {
-    const form = {
-      isCancle : true,
-      status : 4,
-      isPay : false,
-      isConfirm : false,
-      isDone : false
-    };
-    await dispatch(updateOrder(+orderId,form));
-    dispatch(filterOrderByUser(+user.id));
-  
-    // history.goBack();
+    const formData = new FormData();
+    formData.append("status", "cancled");
+    await dispatch(updateOrderStatus(+orderId, formData));
   };
 
   const handleSucess = async (orderId) => {
-    const form = {
-      isDone : true,
-      status : 3,
-      isPay : true,
-      isCancle : false,
-      isConfirm : false
-    };
-    await dispatch(updateOrder(+orderId,form));
-    dispatch(filterOrderByUser(+user.id));
-    // history.goBack();
+    const formData = new FormData();
+    formData.append("status", "delivered");
+    await dispatch(updateOrderStatus(+orderId, formData));
   };
-
 
   return (
     <Fragment>
-      <Main_Header  />
- 
+      <Main_Header />
 
-
-      <div className="container py-5">
-        <div className="row">
-          <aside className="col-lg-3">
-            {/* COMPONENT MENU LIST */}
-            <div className="card p-3 h-100">
-              <nav className="nav flex-column nav-pills">
-                <Link to="/profile" className="nav-link " href="#">
-                  Cá nhân
-                </Link>
-                <Link className="nav-link active" href="#" to="/orders">
-                  Đơn hàng đã đặt
-                </Link>
-                <Link className="nav-link" href="#" to="/wishlist">
-                  Sản phẩm yêu thích
-                </Link>
-                <Link to="/Change_Password" className="nav-link" href="#">
-                  Đổi mật khẩu
-                </Link>
-                <a className="nav-link" href="#" onClick={()=>dispatch(logout())}>
-                  Đăng xuất
-                </a>
-                
-              </nav>
-            </div>
-            {/* COMPONENT MENU LIST END .// */}
-          </aside>
-          <div className="col-lg-9">
-            <article className="card">
-              <h3 className="card-title">Đơn hàng của bạn</h3>
-              <div className="card-body">
-              {listOrder?.map((element)=>
-              <article className="card border-primary mb-4">
-              <div className="card-body">
-                <header className="d-lg-flex">
-                  <div className="flex-grow-1">
-                    <h6 className="mb-0">Order ID: {element.id} {"  "}
-                    {element.status == 0 ? <span class="badge bg-warning">Chờ xác nhận</span> :
-        element.status == 1 ? <span class="badge bg-primary">Đã xác nhận</span> :
-        element.status == 2 ? <span class="badge bg-dark">Đang giao hàng</span> :
-        element.status == 3 ? <span class="badge bg-success">Thành công</span> :
-        <span class="badge bg-danger">Đã hủy</span>}
-                    </h6>
-                    <span className="text-muted">ngày đặt: <Moment format="YYYY/MM/DD HH:mm">
-                                    {element.createdAt}
-                                  </Moment></span>
-                  </div>
-                  <div>
-                    {element.status== 0 ?
-                    <button onClick={()=>handleCancel(element.id)}  className="btn btn-sm btn-outline-danger">Hủy</button>
-                    
-                    : null}
-                    {element.status== 2 ?
-                    <button onClick={()=>handleSucess(element.id)}  className="btn btn-sm btn-outline-primary">Đã nhận hàng</button>
-                    
-                    : null}
-                  </div>
-                    {/* <a href="#" className="btn btn-sm btn-primary">Track order</a>  */}
-                </header>
-                <hr />
-                <div className="row">
-                  <div className="col-lg-4">
-                    <p className="mb-0 text-muted">Thông tin nhận hàng</p>
-                    <p className="m-0"> 
-                      Tên người nhận :{element.nameReceiver} <br />
-                      Điện thoại: {element.phoneReceiver} <br />
-                      Email: {element.emailReceiver} </p>
-                  </div> {/* col.// */}
-                  <div className="col-lg-4 border-start">
-                    <p className="mb-0 text-muted">Địa chỉ</p>
-                    <p className="m-0"> {element.addressReceiver} </p>
-                  </div> {/* col.// */}
-                  <div className="col-lg-4 border-start">
-                    <p className="mb-0 text-muted">Hình thức thanh toán</p>
-                    <p className="m-0">
-                      <span className="text-success"> {element.payment?.name} </span> <br /> 
-                      Tổng tiền : {element.total} VNĐ
-                    </p>
-                  </div> {/* col.// */}
-                </div> {/* row.// */}
-                <hr />
-                <ul className="row">
-                  {element.orderDetails?.map((detail)=>
-                  
-                  <li className="col-xl-4  col-lg-6">
-                    <figure className="itemside mb-3">
-                      <div className="aside">
-                        <img width={72} height={72} src={"https://doantotngiepbackendspringboot-production.up.railway.app/files/" + detail.product?.image} className="img-sm rounded border" />
-                      </div>
-                      <figcaption className="info">
-                        <p className="title">{detail.product?.name}</p>
-                        <strong> {detail.quantity} x = {detail.promotionPrice} VNĐ </strong>
-                      </figcaption>
-                    </figure> 
-                  </li>
-                  )}
-                </ul>
-              </div> {/* card-body .// */}
-            </article>
-            
-              )}
-
-              </div>
-              {/* card-body .// */}
-            </article>
-            {/* card .// */}
+      <main className="main">
+        <div
+          className="page-header text-center"
+          style={{ backgroundImage: 'url("assets/images/page-header-bg.jpg")' }}
+        >
+          <div className="container">
+            <h1 className="page-title">
+              My Account<span>Shop</span>
+            </h1>
           </div>
+          {/* End .container */}
         </div>
-      </div>
+        {/* End .page-header */}
+        <nav aria-label="breadcrumb" className="breadcrumb-nav mb-3">
+          <div className="container">
+            <ol className="breadcrumb">
+              <li className="breadcrumb-item">
+                <a href="index.html">Home</a>
+              </li>
+              <li className="breadcrumb-item">
+                <a href="#">Shop</a>
+              </li>
+              <li className="breadcrumb-item active" aria-current="page">
+                My Account
+              </li>
+            </ol>
+          </div>
+          {/* End .container */}
+        </nav>
+        {/* End .breadcrumb-nav */}
+        <div className="page-content">
+          <div className="dashboard">
+            <div className="container">
+              <div className="row">
+                <aside className="col-md-4 col-lg-3">
+                  <ul
+                    className="nav nav-dashboard flex-column mb-3 mb-md-0"
+                    role="tablist"
+                  >
+                    <li className="nav-item">
+                      <Link
+                        className="nav-link"
+                        id="tab-dashboard-link"
+                        data-toggle="tab"
+                        role="tab"
+                        aria-controls="tab-dashboard"
+                        aria-selected="false"
+                        to="/profile"
+                      >
+                        Thông tin tài khoản
+                      </Link>
+                    </li>
+                    <li className="nav-item">
+                      <Link
+                        className="nav-link"
+                        id="tab-orders-link"
+                        data-toggle="tab"
+                        role="tab"
+                        aria-controls="tab-orders"
+                        aria-selected="false"
+                        to="/orders"
+                      >
+                        Đơn hàng đã đặt
+                      </Link>
+                    </li>
+                    <li className="nav-item">
+                      <Link
+                        className="nav-link"
+                        id="tab-downloads-link"
+                        data-toggle="tab"
+                        to="/change-password"
+                        role="tab"
+                        aria-controls="tab-downloads"
+                        aria-selected="false"
+                      >
+                        Đổi mật khẩu
+                      </Link>
+                    </li>
 
+                    {/* <li className="nav-item">
+                <a className="nav-link" href="#">
+                  Sign Out
+                </a>
+              </li> */}
+                  </ul>
+                </aside>
+                {/* End .col-lg-3 */}
+                <div className="col-md-8 col-lg-9">
+                  <div className="tab-content">
+                    <div
+                      className="tab-pane fade active show"
+                      id="tab-account"
+                      role="tabpanel"
+                      aria-labelledby="tab-account-link"
+                    >
+                      /////////////////////
+                      {listOrder?.map((element) => (
+                        <div className="row" style={{ background: "#f9f9f9" }}>
+                          <div className="col-lg-6">
+                            <div className="card card-dashboard">
+                              <div className="card-body">
+                                <h3 className="card-title">
+                                  Thông tin đơn hàng
+                                </h3>
+                                {/* End .card-title */}
+                                <p>
+                                  Tên người nhận: {element.nameReceiver}
+                                  <br />
+                                  Số điện thoại: {element.phoneReceiver}
+                                  <br />
+                                  Địa chỉ: {element.addressReceiver}
+                                  <br />
+                                  Số tiền: {element.totalPrice}
+                                  <br />
+                                  Trạng thái đơn hàng: {element.orderStatus}
+                                  <br />
+                                  Trạng thái thanh toán: {element.paymentStatus}
+                                  <br />
+                                  Phương thức thanh toán:{" "}
+                                  {element.paymentMethod.name}
+                                  <br />
+                                  <button
+                                    className="btn btn-danger mr-2"
+                                    onClick={() => handleCancel(element.id)}
+                                  >
+                                    Hủy <i className="icon-edit" />
+                                  </button>
+                                  <button
+                                    className="btn btn-success"
+                                    onClick={() => handleSucess(element.id)}
+                                  >
+                                    Đã nhận được hàng{" "}
+                                    <i className="icon-edit" />
+                                  </button>
+                                </p>
+                              </div>
+                              {/* End .card-body */}
+                            </div>
+                            {/* End .card-dashboard */}
+                          </div>
+                          {/* End .col-lg-6 */}
+                          <div className="col-lg-6">
+                            <div className="card card-dashboard">
+                              <div className="card-body">
+                                <h3 className="card-title">
+                                  Danh sách sản phẩm
+                                </h3>
+                                {/* End .card-title */}
+                                <table className="table table-summary">
+                                  <thead>
+                                    <tr>
+                                      <th>Product</th>
+                                      <th>Total</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {element.orderDetails !== undefined &&
+                                    element.orderDetails !== null
+                                      ? element.orderDetails.map(
+                                          (item, index) => (
+                                            <tr>
+                                              <td>
+                                                <a href="#">
+                                                  {item.product.name}
+                                                </a>
+                                                <br />X {item.quantity}
+                                              </td>
+                                              <td>
+                                                {item.quantity * item.price} VNĐ
+                                              </td>
+                                            </tr>
+                                          )
+                                        )
+                                      : null}
+                                    {/* <tr className="summary-subtotal">
+                      <td>Subtotal:</td>
+                      <td>{totalCart} VNĐ</td>
+                    </tr>
+                    <tr>
+                      <td>Shipping:</td>
+                      <td>Free shipping</td>
+                    </tr> */}
+                                    <tr className="summary-total">
+                                      <td>Total:</td>
+                                      <td>{element.totalPrice} VNĐ</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                              {/* End .card-body */}
+                            </div>
+                            {/* End .card-dashboard */}
+                          </div>
+                          {/* End .col-lg-6 */}
+                        </div>
+                      ))}
+                    </div>
+                    {/* .End .tab-pane */}
+                  </div>
+                </div>
+                {/* End .col-lg-9 */}
+              </div>
+              {/* End .row */}
+            </div>
+            {/* End .container */}
+          </div>
+          {/* End .dashboard */}
+        </div>
+        {/* End .page-content */}
+      </main>
       <Main_Footer />
     </Fragment>
   );

@@ -8,7 +8,7 @@ import {
   getCart,
   getCartByServer,
   increaseItemQuantity,
-  removeItemFromCart
+  removeItemFromCart,
 } from "../../actions/cart";
 import MainFooter from "../../layouts/footer";
 import MainHeader from "../../layouts/header";
@@ -18,7 +18,7 @@ const Cart_Page = (props) => {
 
   useEffect(() => {
     dispatch(getCart());
-    dispatch(getCartByServer())
+    dispatch(getCartByServer());
   }, []);
 
   // const cartItem = JSON.parse(localStorage.getItem('cartItem'));
@@ -69,179 +69,308 @@ const Cart_Page = (props) => {
           <div className="row text-center">
             <div className="col-12 empty-content">
               <div className="pro-empty-page">
-                <h2 style={{fontSize:300}}>
+                <h2 style={{ fontSize: 300 }}>
                   <i className="fas fa-shopping-cart" />
                 </h2>
                 <h1>Giỏ hàng của bạn đang trống</h1>
                 <p>
-                  <Link to="/shop" className="btn btn-secondary" >Tiếp tục mua sắm </Link>
+                  <Link to="/shop" className="btn btn-secondary">
+                    Tiếp tục mua sắm{" "}
+                  </Link>
                 </p>
               </div>
             </div>
           </div>
         </div>
       ) : (
-
-        <section className="padding-y bg-light">
-          <div className="container">
-            {/* =================== COMPONENT CART+SUMMARY ====================== */}
-            <div className="row">
-              <div className="col-md-9">
-                {products !== undefined && products !== null
-                  ? products.map((item, index) => (
-                      <article className="card card-body mb-3">
-                        <div className="row gy-3 align-items-center">
-                          <div className="col-md-6">
-                            <Link to={`/product-detail/${item.id}`} href="#" className="itemside align-items-center">
-                              <div className="aside">
-                                <img
-                                  src={item.image}
-                                  height={72}
-                                  width={72}
-                                  className="img-thumbnail img-sm"
-                                />
-                              </div>
-                              <div className="info">
-                                <p className="title">{item.name}</p>
-                                {/* <span className="text-muted">Danh mục: {item.category.name}</span>  */}
-                                <span className="text-muted">Còn: {item.instock} sản phẩm</span> 
-                              </div>
-                            </Link>
-                          </div>
-                          {/* col.// */}
-                          <div className="col-auto">
-                            <div className="input-group input-spinner">
-                            {item.quantity > 1 ? (
-                              <button
-                                className="btn btn-light"
-                                type="button"
-                                onClick={() =>
-                                  decreaseQty(index, item, item.quantity - 1)
-                                }
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width={24}
-                                  height={24}
-                                  fill="#999"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path d="M19 13H5v-2h14v2z" />
-                                </svg>
-                              </button>
-                              ) : null}
-                              <input
-                                type="text"
-                                id="quantity1"
-                                name="quantity"
-                                className="form-control"
-                                //defaultValue={2}
-                                value={item.quantity}
-                                disabled
-                              />
-                              {item.quantity >= item.instock ? null : 
-                              
-                              <button
-                              className="btn btn-light"
-                              type="button"
-                              onClick={() =>
-                                  increaseQty(index, item, item.quantity + 1)
-                                }
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width={24}
-                                  height={24}
-                                  fill="#999"
-                                  viewBox="0 0 24 24"
+        <main className="main">
+          <div
+            className="page-header text-center"
+            style={{
+              backgroundImage: 'url("assets/images/page-header-bg.jpg")',
+            }}
+          >
+            <div className="container">
+              <h1 className="page-title">
+                Shopping Cart<span>Shop</span>
+              </h1>
+            </div>
+            {/* End .container */}
+          </div>
+          {/* End .page-header */}
+          <nav aria-label="breadcrumb" className="breadcrumb-nav">
+            <div className="container">
+              <ol className="breadcrumb">
+                <li className="breadcrumb-item">
+                  <a href="index.html">Home</a>
+                </li>
+                <li className="breadcrumb-item">
+                  <a href="#">Shop</a>
+                </li>
+                <li className="breadcrumb-item active" aria-current="page">
+                  Shopping Cart
+                </li>
+              </ol>
+            </div>
+            {/* End .container */}
+          </nav>
+          {/* End .breadcrumb-nav */}
+          <div className="page-content">
+            <div className="cart">
+              <div className="container">
+                <div className="row">
+                  <div className="col-lg-9">
+                    <table className="table table-cart table-mobile">
+                      <thead>
+                        <tr>
+                          <th>Sản phẩm</th>
+                          <th>Giá</th>
+                          <th>Số lượng</th>
+                          <th>Tổng tiền</th>
+                          <th />
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {products !== undefined && products !== null
+                          ? products.map((item, index) => (
+                              <tr>
+                                <td className="product-col">
+                                  <div className="product">
+                                    <figure className="product-media">
+                                      <a href="#">
+                                        <img
+                                          src={item.images[0]?.imagePath}
+                                          alt="Product image"
+                                        />
+                                      </a>
+                                    </figure>
+                                    <h3 className="product-title">
+                                      <a href="#"> src={item.name}</a>
+                                    </h3>
+                                    {/* End .product-title */}
+                                  </div>
+                                  {/* End .product */}
+                                </td>
+                                <td className="price-col">{item.price}</td>
+                                <td className="quantity-col">
+                                  <div className="cart-product-quantity">
+                                    <div className="input-group  input-spinner">
+                                      {item.quantity > 1 ? (
+                                        <div className="input-group-prepend">
+                                          <button
+                                            style={{ minWidth: 26 }}
+                                            className="btn btn-decrement btn-spinner"
+                                            type="button"
+                                            onClick={() =>
+                                              decreaseQty(
+                                                index,
+                                                item,
+                                                item.quantity - 1
+                                              )
+                                            }
+                                          >
+                                            <i className="icon-minus" />
+                                          </button>
+                                        </div>
+                                      ) : null}
+                                      <input
+                                        type="text"
+                                        style={{ textAlign: "center" }}
+                                        className="form-control "
+                                        required=""
+                                        placeholder=""
+                                        value={item.quantity}
+                                        disabled
+                                      />
+                                      <div className="input-group-append">
+                                        <button
+                                          style={{ minWidth: 26 }}
+                                          className="btn btn-increment btn-spinner"
+                                          type="button"
+                                          onClick={() =>
+                                            increaseQty(
+                                              index,
+                                              item,
+                                              item.quantity + 1
+                                            )
+                                          }
+                                        >
+                                          <i className="icon-plus" />
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  {/* End .cart-product-quantity */}
+                                </td>
+                                <td className="total-col">
+                                  {item.quantity * item.price}
+                                </td>
+                                <td className="remove-col">
+                                  <button
+                                    className="btn-remove"
+                                    onClick={() => confirmDelete(index, item)}
                                   >
-                                  <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-                                </svg>
+                                    <i className="icon-close" />
+                                  </button>
+                                </td>
+                              </tr>
+                            ))
+                          : null}
+                      </tbody>
+                    </table>
+                    {/* End .table table-wishlist */}
+                    <div className="cart-bottom">
+                      <div className="cart-discount">
+                        <form action="#">
+                          <div className="input-group">
+                            <input
+                              type="text"
+                              className="form-control"
+                              required=""
+                              placeholder="coupon code"
+                            />
+                            <div className="input-group-append">
+                              <button
+                                className="btn btn-outline-primary-2"
+                                type="submit"
+                              >
+                                <i className="icon-long-arrow-right" />
                               </button>
-                                }
                             </div>
-                            {/* input-group.// */}
+                            {/* .End .input-group-append */}
                           </div>
-                          {/* col.// */}
-                          <div className="col">
-                            <strong className="price">
-                              {(item.quantity * item.promotionPrice).toFixed(2)}
-                            </strong>
-                          </div>
-                          <div className="col text-end">
-                            <button href="#" className="btn btn-icon btn-light" onClick={() => confirmDelete(index, item)}>
-                              <i className="fa fa-trash" />
-                            </button>
-                          </div>
-                        </div>
-                        {/* row.// */}
-                      </article>
-                    ))
-                  : null}
-                {/* card .// */}
-              </div>
-              <aside className="col-lg-3">
-                {/* <div className="card mb-3">
-                  <div className="card-body">
-                    <form>
-                      <div className="form-group">
-                        <label className="form-label">Have coupon?</label>
-                        <div className="input-group">
-                          <input
-                            type="text"
-                            className="form-control"
-                            name
-                            placeholder="Coupon code"
-                          />
-                          <button className="btn btn-light">Apply</button>
-                        </div>
+                          {/* End .input-group */}
+                        </form>
                       </div>
-                    </form>
+                      {/* End .cart-discount */}
+                      <a href="#" className="btn btn-outline-dark-2">
+                        <span>UPDATE CART</span>
+                        <i className="icon-refresh" />
+                      </a>
+                    </div>
+                    {/* End .cart-bottom */}
                   </div>
-                </div> */}
-
-                <div className="card">
-                  <div className="card-body">
-                    {/* <dl className="dlist-align">
-                      <dt>Tổng tiền hàng:</dt>
-                      <dd className="text-end"> $329.00</dd>
-                    </dl>
-                    <dl className="dlist-align">
-                      <dt>Giảm giá:</dt>
-                      <dd className="text-end text-success"> - $60.00 </dd>
-                    </dl>
-                    <dl className="dlist-align">
-                      <dt>TAX:</dt>
-                      <dd className="text-end"> $14.00 </dd>
-                    </dl>
-                    <hr /> */}
-                    <dl className="dlist-align">
-                      <dt>Tổng tiền hàng:</dt>
-                      <dd className="text-end text-dark h5"> {total} VNĐ </dd>
-                    </dl>
-                    <div className="d-grid gap-2 my-3">
-                      <Link to="/checkout" className="btn btn-success w-100">
-                        Mua hàng
-                      </Link>
-                      <Link to="/shop" className="btn btn-light w-100">
-                        Trở về shop
+                  {/* End .col-lg-9 */}
+                  <aside className="col-lg-3">
+                    <div className="summary summary-cart">
+                      <h3 className="summary-title">Cart Total</h3>
+                      {/* End .summary-title */}
+                      <table className="table table-summary">
+                        <tbody>
+                          <tr className="summary-subtotal">
+                            <td>Subtotal:</td>
+                            <td>{total} VNĐ</td>
+                          </tr>
+                          {/* End .summary-subtotal */}
+                          <tr className="summary-shipping">
+                            <td>Shipping:</td>
+                            <td>&nbsp;</td>
+                          </tr>
+                          <tr className="summary-shipping-row">
+                            <td>
+                              <div className="custom-control custom-radio">
+                                <input
+                                  type="radio"
+                                  id="free-shipping"
+                                  name="shipping"
+                                  className="custom-control-input"
+                                />
+                                <label
+                                  className="custom-control-label"
+                                  htmlFor="free-shipping"
+                                >
+                                  Free Shipping
+                                </label>
+                              </div>
+                              {/* End .custom-control */}
+                            </td>
+                            <td>$0.00</td>
+                          </tr>
+                          {/* End .summary-shipping-row */}
+                          <tr className="summary-shipping-row">
+                            <td>
+                              <div className="custom-control custom-radio">
+                                <input
+                                  type="radio"
+                                  id="standart-shipping"
+                                  name="shipping"
+                                  className="custom-control-input"
+                                />
+                                <label
+                                  className="custom-control-label"
+                                  htmlFor="standart-shipping"
+                                >
+                                  Standart:
+                                </label>
+                              </div>
+                              {/* End .custom-control */}
+                            </td>
+                            <td>$10.00</td>
+                          </tr>
+                          {/* End .summary-shipping-row */}
+                          <tr className="summary-shipping-row">
+                            <td>
+                              <div className="custom-control custom-radio">
+                                <input
+                                  type="radio"
+                                  id="express-shipping"
+                                  name="shipping"
+                                  className="custom-control-input"
+                                />
+                                <label
+                                  className="custom-control-label"
+                                  htmlFor="express-shipping"
+                                >
+                                  Express:
+                                </label>
+                              </div>
+                              {/* End .custom-control */}
+                            </td>
+                            <td>$20.00</td>
+                          </tr>
+                          {/* End .summary-shipping-row */}
+                          <tr className="summary-shipping-estimate">
+                            <td>
+                              Estimate for Your Country
+                              <br /> <a href="dashboard.html">Change address</a>
+                            </td>
+                            <td>&nbsp;</td>
+                          </tr>
+                          {/* End .summary-shipping-estimate */}
+                          <tr className="summary-total">
+                            <td>Total:</td>
+                            <td>{total} VNĐ</td>
+                          </tr>
+                          {/* End .summary-total */}
+                        </tbody>
+                      </table>
+                      {/* End .table table-summary */}
+                      <Link
+                        to="checkout"
+                        className="btn btn-outline-primary-2 btn-order btn-block"
+                      >
+                        PROCEED TO CHECKOUT
                       </Link>
                     </div>
-                  </div>
-                  {/* card-body.// */}
+                    {/* End .summary */}
+                    <Link
+                      to="/shop"
+                      className="btn btn-outline-dark-2 btn-block mb-3"
+                    >
+                      <span>CONTINUE SHOPPING</span>
+                      <i className="icon-refresh" />
+                    </Link>
+                  </aside>
+                  {/* End .col-lg-3 */}
                 </div>
-                {/* card.// */}
-              </aside>
-              {/* col.// */}
+                {/* End .row */}
+              </div>
+              {/* End .container */}
             </div>
-            {/* row.// */}
-            {/* =================== COMPONENT 1 CART+SUMMARY .//END  ====================== */}
-            <br />
-            <br />
+            {/* End .cart */}
           </div>
-          {/* container .//  */}
-        </section>
-
+          {/* End .page-content */}
+        </main>
       )}
 
       <MainFooter />

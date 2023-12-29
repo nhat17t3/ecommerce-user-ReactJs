@@ -1,122 +1,67 @@
+import axios from "axios";
 import React, { Fragment, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
-import { toast } from "react-toastify";
-import {
-  createOrder,
-  getListPayment, getListTransporter, getListVoucherByPage
-} from "../../actions";
+import { createOrder, getListPayment } from "../../actions";
 import {
   addToCart,
-  clearCartContent, getCart, getCartByServer, removeItemFromCart
+  clearCartContent,
+  getCart,
+  getCartByServer,
+  removeItemFromCart,
 } from "../../actions/cart";
-import PayPal from "../../components/paypal";
 import Main_Footer from "../../layouts/footer";
 import Main_Header from "../../layouts/header/";
 
-
 const Checkout = () => {
-
-  
-  //////////////////////////
-
-  let user = useSelector(state => state.auth.user);
-  let userID = useSelector(state => state.auth.user.id);
-  if(userID == null || userID == undefined) userID = 0;
   const history = useHistory();
+  let user = useSelector((state) => state.auth.user);
+  let userID = useSelector((state) => state.auth.user.id);
+  if (userID == null || userID == undefined) userID = 1;
 
-  
-  
-  const [voucher, setVoucher] = useState('');
-  const [voucherId1, setVoucherId1] = useState(0);
-  const [reduceVoucher, setReduceVoucher] = useState(0);
-  
-  const [nameReceiver, setNameReceiver] = useState(`${user.firstName} ${user.lastName}`);
+  const [nameReceiver, setNameReceiver] = useState(`${user.name}`);
   const [phoneReceiver, setPhoneReceiver] = useState(user.phone);
   const [addressReceiver, setAddressReceiver] = useState(user.address);
   const [emailReceiver, setEmailReceiver] = useState(user.email);
-  const [note, setNote] = useState('')
-  const [paymentId,setPaymentId] = useState(0);
-  const [transporterId,setTransporterId] = useState(0);
-  
-  let checkForm = false;
-  if(nameReceiver =="" || phoneReceiver == "" || addressReceiver == "" || paymentId == 0 || transporterId ==0 )
-  checkForm=false ;
-  else checkForm = true;
-  
-  useEffect(() => {
-    dispatch(getListVoucherByPage(100,0));
-  }, []);
-  const listVoucher = useSelector(state => state.voucher.listVoucher);
+  const [note, setNote] = useState("");
+  const [paymentId, setPaymentId] = useState(1);
+  const [paymentStatus, setPaymentStatus] = useState("UNPAID");
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [communes, setCommunes] = useState([]);
 
-  
-  const handleApplyVoucher= () =>{
-    console.log("voucher")
-    const findVoucher = listVoucher.find((q)=>q.code == voucher);
-    if(findVoucher != undefined) {
-      const now = new Date();
-      const start = new Date(findVoucher.startAt);
-      const end = new Date(findVoucher.endAt);
+  const [selectedProvince, setSelectedProvince] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [selectedCommune, setSelectedCommune] = useState("");
+  const [homeNumber, setHomeNumber] = useState("");
 
-      if(start.getTime() <= now.getTime() && end.getTime() >= now.getTime() 
-      && findVoucher.quantity > 0 
-      && findVoucher.minOrderValue <= totalCart && findVoucher.isActive!=false )
-      {
-        if(findVoucher.type === "1") {
-          //  if (findVoucher.value > findVoucher.maxPrice) reduce = findVoucher.maxPrice;
-          //    else reduce= findVoucher.value;
-          setReduceVoucher(findVoucher.value) ;
-        }
-        else{
-          let k = totalCart * findVoucher.value / 100;
-        //  if (k > findVoucher.maxPrice) reduce = findVoucher.maxPrice ;
-        //  else reduce = k;
-          setReduceVoucher(k) ;
-        } 
-        setVoucherId1(findVoucher.id)
-        console.log(findVoucher);
+  let checkForm = true;
+  if (
+    nameReceiver == "" ||
+    phoneReceiver == "" ||
+    addressReceiver == "" ||
+    paymentId == 0
+    // ||transporterId == 0
+  )
+    checkForm = false;
 
-
-      }
-      else toast.warning("Mã giảm giá không khả dụng")
-
-      
-
-    }
-    else toast.warning("Sai mã giảm giá")
-  }
-  
   useEffect(() => {
     dispatch(getListPayment());
   }, []);
-  const listPayment = useSelector(state => state.payment.listPayment);
+  const listPayment = useSelector((state) => state.payment.listPayment);
 
-  useEffect(() => {
-    dispatch(getListTransporter());
-  }, []);
-  const listTransporter = useSelector(state => state.transporter.listTransporter);
-  
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getCart());
-    dispatch(getCartByServer())
+    dispatch(getCartByServer());
   }, []);
 
-  const [defaultAdd, setDfaultAdd] = useState(false);
-  // const orderData = JSON.parse(localStorage.getItem("orderData"));
   const cartproducts = useSelector((state) => state.cart.products);
-
   // get total from store
+  const products = useSelector((state) => state.cart.products);
   const totalCart = useSelector((state) => state.cart.total);
   // adding total with shipping method charges
   const totalnum = parseInt(totalCart);
-  // let feeShip = 0;
-  const [feeShip1, setFeeShip] = useState(0);
-  //  if(totalCart <300000)  feeShip =parseInt(20000);
-  const totalWithShippingMethod = totalnum + feeShip1 -reduceVoucher;
-
-
   // for delete item from cart
   const confirmDelete = (index, item) => {
     dispatch(removeItemFromCart(index, item));
@@ -124,64 +69,66 @@ const Checkout = () => {
   };
 
   // for show order data on console and delelte it form localstorage
-  const handleSubmit = (e) => {
+  const handleSubmit = (statusPay = "UNPAID") => {
     // e.preventDefault();
-
-    const cart =  cartproducts.map((element)=> ({
-      productId : element.id,
-      quantity : element.quantity,
-      unitPrice : element.unitPrice,
-      promotionPrice : element.promotionPrice
-
-    }))
-    
+    const cart = cartproducts.map((element) => ({
+      productId: element.id,
+      quantity: element.quantity,
+      price: element.price,
+    }));
     const orderdata = {
       nameReceiver,
       phoneReceiver,
-      addressReceiver,
-      emailReceiver,
+      addressReceiver:
+        selectedProvince.name +
+        ";" +
+        selectedDistrict.name +
+        ";" +
+        selectedCommune.name +
+        ";" +
+        homeNumber,
       note,
-      orderDetailRequests: cart,
+      orderDetailRequestDTO: cart,
       userId: userID,
-      paymentId : +paymentId,
-      deliveryId : +transporterId,
-      voucherId :voucherId1,
-      total : totalWithShippingMethod,
-      discount : reduceVoucher,
-      shippingFee : feeShip1,
-      status : 0,
+      totalPrice: totalCart,
+      orderStatus: "PENDING",
+      paymentMethodId: +paymentId,
+      paymentStatus: statusPay,
+      // deliveryId: +transporterId,
+      // voucherId: voucherId1,
+      // total: totalWithShippingMethod,
+      // discount: reduceVoucher,
+      // shippingFee: feeShip1,
+      // status: 0,
     };
-    
+
     console.log("User Order Details", orderdata);
 
     dispatch(createOrder(orderdata));
 
-
     setTimeout(() => {
       dispatch(clearCartContent());
       localStorage.removeItem("cartItem");
-      history.push("/thankyou")
+      history.push("/thankyou");
       console.log("the data is removed");
     }, 2000);
   };
-//////////////////////////////////
+  //////////////////////////////////
 
-const value = Number(totalWithShippingMethod/23000.0).toFixed(2);
-  const [paidFor, setPaidFor] = useState(false);
-  const [error, setError] = useState(null);
+  const PricePapal = Number(totalCart / 23000.0).toFixed(2);
   const paypalRef = useRef();
   useEffect(() => {
     window.paypal
       .Buttons({
-        style: {
-          layout: 'horizontal',
-          size: 'small',
-          color:  'black',
-          shape:  'pill',
-          label:  'pay',
-          height: 40,
-          tagline: 'false'
-      },
+        // style: {
+        //   layout: "horizontal",
+        //   size: "small",
+        //   color: "black",
+        //   shape: "pill",
+        //   label: "pay",
+        //   height: 40,
+        //   tagline: "false",
+        // },
         createOrder: (data, actions) => {
           return actions.order.create({
             purchase_units: [
@@ -189,7 +136,7 @@ const value = Number(totalWithShippingMethod/23000.0).toFixed(2);
                 description: "Cosmetic store checkout",
                 amount: {
                   currency_code: "USD",
-                  value: value,
+                  value: PricePapal,
                 },
               },
             ],
@@ -197,278 +144,423 @@ const value = Number(totalWithShippingMethod/23000.0).toFixed(2);
         },
         onApprove: async (data, actions) => {
           const order = await actions.order.capture();
-          setPaidFor(true);
           console.log("ORDER", order);
-           // goi API
-        //    const form = {
-        //     idBill : bill.billId ,
-        //     payer : order.payer.email_address,
-        //     incoming: k,
-        //   }
-        //   dispatch(payByTutor(form));
-          handleSubmit();
-
+          // goi API
+          //    const form = {
+          //     idBill : bill.billId ,
+          //     payer : order.payer.email_address,
+          //     incoming: k,
+          //   }
+          //   dispatch(payByTutor(form));
+          handleSubmit("PAID");
         },
         onError: (err) => {
-          setError(err);
           console.error("ERROR", err);
-          alert("thanh toán thất bại, vui long thử lại")
+          alert("thanh toán thất bại, vui lòng thử lại");
         },
       })
       .render(paypalRef.current);
-  }, [paymentId]);
+  }, []);
 
-  
+  /////////////// render địa chỉ theo tỉnh thành, quận huyện, xã
+
+  useEffect(() => {
+    // Gọi API để lấy danh sách tỉnh/thành phố
+    const fetchProvinces = async () => {
+      try {
+        const response = await axios.get(
+          "https://provinces.open-api.vn/api/?depth=2"
+        );
+        setProvinces(response.data);
+      } catch (error) {
+        console.error("Error fetching provinces:", error);
+      }
+    };
+
+    fetchProvinces();
+  }, []); // Chỉ gọi API khi component được mount
+
+  useEffect(() => {
+    // Gọi API để lấy danh sách huyện/quận khi tỉnh được chọn
+    const fetchDistricts = async () => {
+      try {
+        if (selectedProvince) {
+          const response = await axios.get(
+            `https://provinces.open-api.vn/api/p/${selectedProvince.code}?depth=2`
+          );
+          setDistricts(response.data.districts);
+        }
+      } catch (error) {
+        console.error("Error fetching districts:", error);
+      }
+    };
+
+    fetchDistricts();
+  }, [selectedProvince]); // Gọi API khi selectedProvince thay đổi
+
+  useEffect(() => {
+    // Gọi API để lấy danh sách xã/phường khi huyện được chọn
+    const fetchCommunes = async () => {
+      try {
+        if (selectedDistrict) {
+          const response = await axios.get(
+            `https://provinces.open-api.vn/api/d/${selectedDistrict.code}?depth=2`
+          );
+          setCommunes(response.data.wards);
+        }
+      } catch (error) {
+        console.error("Error fetching communes:", error);
+      }
+    };
+
+    fetchCommunes();
+  }, [selectedDistrict]); // Gọi API khi selectedDistrict thay đổi
 
   return (
     <Fragment>
       <Main_Header />
-      <section className="padding-y bg-light">
-  <div className="container">
-    <div className="row">
-      <main className="col-xl-8 col-lg-8">
-        { userID == 0 ? 
-         <article className="card mb-4">
-         <div className="content-body">
-           <div className="float-end">
-             <Link to="/signup" className="btn btn-outline-primary me-2">Đăng kí</Link>
-             <Link to="/signin" className="btn btn-primary">Đăng nhập</Link>
-           </div>
-           <h5>Bạn đã có tài khoản?</h5>
-           <p className="mb-0">Đăng kí để nhận thông tin về đơn hàng</p>
-         </div>
-       </article>
-        : null}
-       
-        {/* ============== COMPONENT CHECKOUT =============== */}			
-        <article className="card">
-          <div className="content-body">
-            <h5 className="card-title">Thông tin nhận hàng</h5>
-            <div className="row">
-              {/* <div className="col-6 mb-3">
-                <label className="form-label">First name</label>
-                <input type="text" className="form-control" placeholder="Type here" />
-              </div>  */}
-              <div className="col-6">
-                <label className="form-label">Tên người nhận</label>
-                <input
-                                type="text"
-                                className="form-control"
-                                id="inlineFormInputGroup0"
-                                placeholder="Name receiver"
-                                name="nameReceiver"
-                                value={nameReceiver}
-                                onChange={(e) => setNameReceiver(e.target.value)}
-                                required
-                              />
-              </div> {/* col end.// */}
-              <div className="col-6 mb-3">
-                <label className="form-label">Số điện thoại</label>
-                <input
-                                type="text"
-                                className="form-control"
-                                id="inlineFormInputGroup1"
-                                placeholder="phone Receiver"
-                                name="phoneReceiver"
-                                value={phoneReceiver}
-                                onChange={(e) => setPhoneReceiver(e.target.value)}
-                                required
-                              />
-              </div> {/* col end.// */}
-              <div className="col-6 mb-3">
-                <label className="form-label">Email</label>
-                <input
-                                type="email"
-                                className="form-control"
-                                id="inlineFormInputGroup1"
-                                placeholder="Email Receiver"
-                                name="emailReceiver"
-                                value={emailReceiver}
-                                onChange={(e) => setEmailReceiver(e.target.value)}
-                              />
-              </div> {/* col end.// */}
-              <div className="col-sm-12 mb-3">
-                <label htmlFor className="form-label">Address</label>
-                <input
-                                type="text"
-                                className="form-control"
-                                id="inlineFormInputGroup1"
-                                placeholder="addressReceiver"
-                                name="addressReceiver"
-                                value={addressReceiver}
-                                onChange={(e) => setAddressReceiver(e.target.value)}
-                                required
-                              />
-              </div>
-              <div className="mb-4">
-              <label htmlFor className="form-label">Note</label>
-              <textarea
-                        class="form-control"
-                        id="note"
-                        rows="4"
-                        name="note"
-                        value={note}
-                        onChange={(e) => setNote(e.target.value)}
-                        // required
-                      >
-                        {note}
-                      </textarea>
-            </div> {/* col end.// */}
-            </div> {/* row.// */}
-
-            <hr className="my-4" />
-            <h5 className="card-title"> Phương thức vận chuyển </h5> 
-            <div className="row mb-3">
-
-
-              {listTransporter.map((element)=>{
-                if(element.isActive == true) 
-                 return(
-                  <div className="col-lg-4 mb-3">
-                  <div className="box box-check">
-                    <label className="form-check">
-                      <input required className="form-check-input" type="radio" name="transporterId" value={element.id} 
-                      onChange={(e)=>{
-                        setTransporterId(e.target.value)
-                        setFeeShip(element.fee);
-                      }
-                      }/>
-                      <b className="border-oncheck" />
-                      <span className="form-check-label">
-                        {element.name} <br />
-                        <small className="text-muted">{element.fee } VNĐ</small>
-                      </span>
-                    </label>
-                  </div>
-                </div>
-                )
-                else return null;
-              
-              })}
-            </div> {/* row end.// */}
-
-           
-
-
-
-              {/* {paymentId ==1 ? (<div>
-               
-                <PayPal  total = {totalWithShippingMethod} />
-              
-                
-              </div>) : null} */}
-
-        
-          
-          
-          </div> {/* card-body end.// */}
-        </article> {/* card end.// */}
-        {/* ============== COMPONENT CHECKOUT .// =============== */}
-      </main> {/* col.// */}
-      <aside className="col-xl-4 col-lg-4">
-        {/* ============== COMPONENT SUMMARY =============== */}
-        <article className="ms-lg-4 mt-4 mt-lg-0" style={{maxWidth: '320px'}}>
-          <h6 className="card-title">Summary</h6>
-          <dl className="dlist-align">
-            <dt>Giá sản phẩm:</dt>
-            <dd className="text-end"> {totalCart } VNĐ</dd>
-          </dl>
-          <dl className="dlist-align">
-            <dt>Giảm giá:</dt>
-            <dd className="text-end text-danger"> - {reduceVoucher} VNĐ</dd>
-          </dl>
-          <dl className="dlist-align">
-            <dt>Phí vận chuyển:</dt>
-           
-            <dd className="text-end"> + {feeShip1} VNĐ</dd> 
-          
-          </dl>
-          <hr />
-          <dl className="dlist-align">
-            <dt> Tổng: </dt>
-            <dd className="text-end"> <strong className="text-dark">{totalWithShippingMethod} VNĐ</strong> </dd>
-          </dl>
-          <div className="input-group my-4">
-          <input
-                            type='text'
-                            className='form-control'
-                            style={{ height: 43 }}
-                            placeholder='Coupon Code'
-                            aria-label='Coupon Code'
-                            aria-describedby='coupon-code'
-                            name='voucher'
-                            value={voucher}
-                            onChange= { (e)=> setVoucher(e.target.value)}
-                          />
-            <button className="btn btn-light text-primary" onClick={handleApplyVoucher}>Áp dụng</button>
+      <main className="main">
+        <div
+          className="page-header text-center"
+          style={{ backgroundImage: 'url("assets/images/page-header-bg.jpg")' }}
+        >
+          <div className="container">
+            <h1 className="page-title">
+              Checkout<span>Shop</span>
+            </h1>
           </div>
-          <hr />
-          <h6 className="mb-4">Sản phẩm trong giỏ hàng</h6>
-          {cartproducts !== undefined
-                            ? cartproducts.map((item, i) => (
-          <figure className="itemside align-items-center mb-4">
-            <div className="aside">
-              <b className="badge bg-secondary rounded-pill">{item.quantity}</b>
-              <img src={item.image} className="img-sm rounded border" />
-            </div>
-            <figcaption className="info">
-              <p  className="title">{item.name} </p>
-              <div className="price text-muted">Tổng: {item.quantity*item.promotionPrice} VNĐ</div> {/* price .// */}
-            </figcaption>
-          </figure>
-           ))
-           : null}
-            <hr className="my-4" />
-            <h5 className="card-title"> Phương thức thanh toán </h5> 
-            <div className="row mb-3">
-
-
-              {listPayment.map((element)=>{
-                 if(element.isActive == true) 
-                 return(
-                  <div className="col-lg-12 mb-3">
-                  <div className="box box-check">
-                    <label className="form-check">
-                      <input required className="form-check-input" type="radio" name="paymentId" value={element.id} 
-                      onChange={(e)=>{
-                        setPaymentId(e.target.value)
-                      }
-                      }/>
-                      <b className="border-oncheck" />
-                      <span className="form-check-label">
-                        {element.name} <br />
-                        {/* <small className="text-muted">{element.description } VNĐ</small> */}
-                      </span>
-                    </label>
+          {/* End .container */}
+        </div>
+        {/* End .page-header */}
+        <nav aria-label="breadcrumb" className="breadcrumb-nav">
+          <div className="container">
+            <ol className="breadcrumb">
+              <li className="breadcrumb-item">
+                <a href="index.html">Home</a>
+              </li>
+              <li className="breadcrumb-item">
+                <a href="#">Shop</a>
+              </li>
+              <li className="breadcrumb-item active" aria-current="page">
+                Checkout
+              </li>
+            </ol>
+          </div>
+          {/* End .container */}
+        </nav>
+        {/* End .breadcrumb-nav */}
+        <div className="page-content">
+          <div className="checkout">
+            <div className="container">
+              {/* End .checkout-discount */}
+              <form>
+                <div className="row">
+                  <div className="col-lg-9">
+                    <h2 className="checkout-title">Thông tin khách hàng</h2>
+                    {/* End .checkout-title */}
+                    <div className="row">
+                      <div className="col-sm-6">
+                        <label className="form-label">Tên người nhận</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="inlineFormInputGroup0"
+                          placeholder=""
+                          name="nameReceiver"
+                          value={nameReceiver}
+                          onChange={(e) => setNameReceiver(e.target.value)}
+                          required
+                        />
+                      </div>
+                      {/* End .col-sm-6 */}
+                      <div className="col-sm-6">
+                        <label className="form-label">Số điện thoại</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="inlineFormInputGroup1"
+                          placeholder=""
+                          name="phoneReceiver"
+                          value={phoneReceiver}
+                          onChange={(e) => setPhoneReceiver(e.target.value)}
+                          required
+                        />
+                      </div>
+                      {/* End .col-sm-6 */}
+                    </div>
+                    {/* End .row */}
+                    <label className="form-label">Email</label>
+                    <input
+                      type="email"
+                      className="form-control"
+                      id="inlineFormInputGroup1"
+                      placeholder=""
+                      name="emailReceiver"
+                      value={emailReceiver}
+                      onChange={(e) => setEmailReceiver(e.target.value)}
+                    />
+                    <div className="row">
+                      <div className="col-sm-6">
+                        <label htmlFor className="form-label">
+                          Tỉnh/Thành Phố
+                        </label>
+                        <select
+                          className="form-control"
+                          required
+                          // value={JSON.stringify(selectedProvince)}
+                          onChange={(e) => {
+                            setSelectedProvince(JSON.parse(e.target.value));
+                            setSelectedDistrict("");
+                            setSelectedCommune("");
+                          }}
+                        >
+                          <option value="" disabled hidden>
+                            Chọn tỉnh/thành phố
+                          </option>
+                          {provinces.map((province) => (
+                            <option
+                              key={province.code}
+                              value={JSON.stringify(province)}
+                            >
+                              {province.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      {/* End .col-sm-6 */}
+                      <div className="col-sm-6">
+                        <label htmlFor className="form-label">
+                          Quận/Huyện
+                        </label>
+                        <select
+                          className="form-control"
+                          // value={JSON.stringify(selectedDistrict)}
+                          onChange={(e) => {
+                            setSelectedDistrict(JSON.parse(e.target.value));
+                            setSelectedCommune("");
+                          }}
+                          disabled={!selectedProvince}
+                          required
+                        >
+                          <option value="" disabled hidden>
+                            Chọn huyện/quận
+                          </option>
+                          {districts.map((district) => (
+                            <option
+                              key={district.code}
+                              value={JSON.stringify(district)}
+                            >
+                              {district.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      {/* End .col-sm-6 */}
+                    </div>
+                    {/* End .row */}
+                    <div className="row">
+                      <div className="col-sm-6">
+                        <label htmlFor className="form-label">
+                          Phường/Xã
+                        </label>
+                        <select
+                          className="form-control"
+                          required
+                          // value={JSON.stringify(selectedCommune)}
+                          onChange={(e) => {
+                            setSelectedCommune(JSON.parse(e.target.value));
+                          }}
+                          disabled={!selectedDistrict}
+                        >
+                          <option value="" disabled hidden>
+                            Chọn xã/phường
+                          </option>
+                          {communes.map((commune) => (
+                            <option
+                              key={commune.code}
+                              value={JSON.stringify(commune)}
+                            >
+                              {commune.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      {/* End .col-sm-6 */}
+                      <div className="col-sm-6">
+                        <label htmlFor className="form-label">
+                          Số nhà
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="inlineFormInputGroup1"
+                          placeholder="addressReceiver"
+                          name="addressReceiver"
+                          value={homeNumber}
+                          onChange={(e) => setHomeNumber(e.target.value)}
+                          required
+                        />
+                      </div>
+                      {/* End .col-sm-6 */}
+                    </div>
+                    {/* End .row */}
+                    {/* End .custom-checkbox */}
+                    {/* End .custom-checkbox */}
+                    <label>Ghi chú (tùy chọn)</label>
+                    <textarea
+                      class="form-control"
+                      id="note"
+                      rows="4"
+                      name="note"
+                      value={note}
+                      onChange={(e) => setNote(e.target.value)}
+                      // required
+                    >
+                      {note}
+                    </textarea>
                   </div>
+                  {/* End .col-lg-9 */}
+                  <aside className="col-lg-3">
+                    <div className="summary">
+                      <h3 className="summary-title">Your Order</h3>
+                      {/* End .summary-title */}
+                      <table className="table table-summary">
+                        <thead>
+                          <tr>
+                            <th>Product</th>
+                            <th>Total</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {products !== undefined && products !== null
+                            ? products.map((item, index) => (
+                                <tr>
+                                  <td>
+                                    <a href="#">{item.name}</a>
+                                  </td>
+                                  <td>{item.quantity * item.price} VNĐ</td>
+                                </tr>
+                              ))
+                            : null}
+                          <tr className="summary-subtotal">
+                            <td>Subtotal:</td>
+                            <td>{totalCart} VNĐ</td>
+                          </tr>
+                          {/* End .summary-subtotal */}
+                          <tr>
+                            <td>Shipping:</td>
+                            <td>Free shipping</td>
+                          </tr>
+                          <tr className="summary-total">
+                            <td>Total:</td>
+                            <td>{totalCart} VNĐ</td>
+                          </tr>
+                          {/* End .summary-total */}
+                        </tbody>
+                      </table>
+                      {/* End .table table-summary */}
+                      <div className="accordion-summary" id="accordion-payment">
+                        <div className="card">
+                          <div className="card-header" id="heading-3">
+                            <h2 className="card-title">
+                              <a
+                                className="collapsed"
+                                role="button"
+                                data-toggle="collapse"
+                                href="#collapse-3"
+                                aria-expanded="false"
+                                aria-controls="collapse-3"
+                                onClick={(e) => {
+                                  setPaymentId(1);
+                                }}
+                              >
+                                Thanh toán khi nhận hàng
+                              </a>
+                            </h2>
+                          </div>
+                          {/* End .card-header */}
+                          <div
+                            id="collapse-3"
+                            className="collapse"
+                            aria-labelledby="heading-3"
+                            data-parent="#accordion-payment"
+                          >
+                            <div className="card-body">
+                              Quisque volutpat mattis eros. Lorem ipsum dolor
+                              sit amet, consectetuer adipiscing elit. Donec
+                              odio. Quisque volutpat mattis eros.
+                            </div>
+                            {/* End .card-body */}
+                          </div>
+                          {/* End .collapse */}
+                        </div>
+                        {/* End .card */}
+                        <div className="card">
+                          <div className="card-header" id="heading-4">
+                            <h2 className="card-title">
+                              <a
+                                className="collapsed"
+                                role="button"
+                                data-toggle="collapse"
+                                href="#collapse-4"
+                                aria-expanded="false"
+                                aria-controls="collapse-4"
+                                onClick={(e) => {
+                                  setPaymentId(2);
+                                }}
+                              >
+                                PayPal{" "}
+                                <small className="float-right paypal-link">
+                                  What is PayPal?
+                                </small>
+                              </a>
+                            </h2>
+                          </div>
+                          {/* End .card-header */}
+                          <div
+                            id="collapse-4"
+                            className="collapse"
+                            aria-labelledby="heading-4"
+                            data-parent="#accordion-payment"
+                          >
+                            <div className="card-body">
+                              <div>
+                                <div ref={paypalRef}></div>
+                              </div>
+                            </div>
+                            {/* End .card-body */}
+                          </div>
+                          {/* End .collapse */}
+                        </div>
+                        {/* End .card */}
+                      </div>
+                      {/* End .accordion */}
+                      <button
+                        type="button"
+                        className="btn btn-outline-primary-2 btn-order btn-block"
+                        onClick={() => handleSubmit()}
+                      >
+                        <span className="btn-text">Đặt hàng</span>
+                        <span className="btn-hover-text">
+                          Proceed to Checkout
+                        </span>
+                      </button>
+                    </div>
+                    {/* End .summary */}
+                  </aside>
+                  {/* End .col-lg-3 */}
                 </div>
-                )
-                else return null;
-              
-              })}
-            </div> {/* row end.// */}
-            <div className="float-end">
-              {!checkForm ? <button className="btn btn-success" disabled >Đặt hàng và thanh toán</button>
-              :
-              
-              paymentId == 2 ? 
-              <div>
-                 <div ref={paypalRef} ></div>
-              </div>
-              : 
-              <button className="btn btn-success"  onClick={() => handleSubmit()}>Đặt hàng</button>
-            }
+                {/* End .row */}
+              </form>
             </div>
-        </article> 
-        {/* ============== COMPONENT SUMMARY .// =============== */}
-      </aside> {/* col.// */}
-    </div> {/* row.// */}
-    <br /><br />
-  </div> {/* container .//  */}
-</section>
+            {/* End .container */}
+          </div>
+          {/* End .checkout */}
+        </div>
+        {/* End .page-content */}
+      </main>
 
       <Main_Footer />
-     
     </Fragment>
   );
 };

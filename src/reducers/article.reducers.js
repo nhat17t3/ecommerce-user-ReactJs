@@ -5,7 +5,10 @@ const initState = {
   article: {},
   loading: false,
   message: "",
-  count: 0
+  pageNumber: 0,
+  pageSize :5,
+  totalElements: 0,
+  totalPages: 0,
 };
 
 export default (state = initState, action) => {
@@ -20,9 +23,13 @@ export default (state = initState, action) => {
       state = {
         ...state,
         loading: false,
-        // message:action.payload.message,
+        message:action.payload.message,
         listArticle: action.payload.dataResponse,
-        count: action.payload.count
+        pageNumber: action.payload.pageNumber,
+        pageSize: action.payload.pageSize,
+        totalElements: action.payload.totalElements,
+        totalPages: action.payload.totalPages,
+
       };
       break;
     case articleConstants.GET_ARTICLE_BY_PAGE_FAILURE:
@@ -32,53 +39,6 @@ export default (state = initState, action) => {
         message: action.payload.message,
       };
       break;
-    //
-    case articleConstants.SEARCH_ARTICLE_BY_NAME_REQUEST:
-      state = {
-        ...state,
-        loading: true,
-      };
-      break;
-    case articleConstants.SEARCH_ARTICLE_BY_NAME_SUCCESS:
-      state = {
-        ...state,
-        loading: false,
-        // message:action.payload.message,
-        listArticle: action.payload.dataResponse,
-        count: action.payload.count
-      };
-      break;
-    case articleConstants.SEARCH_ARTICLE_BY_NAME_FAILURE:
-      state = {
-        ...state,
-        loading: false,
-        message: action.payload.message,
-      };
-      break;
-    
-    //
-    case articleConstants.FILTER_ARTICLE_BY_CATEGORY_REQUEST:
-      state = {
-        ...state,
-        loading: true,
-      };
-      break;
-    case articleConstants.FILTER_ARTICLE_BY_CATEGORY_SUCCESS:
-      state = {
-        ...state,
-        loading: false,
-        // message:action.payload.message,
-        listArticle: action.payload.dataResponse,
-      };
-      break;
-    case articleConstants.FILTER_ARTICLE_BY_CATEGORY_FAILURE:
-      state = {
-        ...state,
-        loading: false,
-        message: action.payload.message,
-      };
-      break;
-    //
     case articleConstants.GET_ARTICLE_BY_ID_REQUEST:
       state = {
         ...state,
@@ -89,7 +49,7 @@ export default (state = initState, action) => {
       state = {
         ...state,
         loading: false,
-        // message:action.payload.message,
+        message:action.payload.message,
         article: action.payload.dataResponse,
       };
       break;
@@ -111,6 +71,7 @@ export default (state = initState, action) => {
       state = {
         ...state,
         message: action.payload.message,
+        article: action.payload.dataResponse,
         loading: false,
       };
       break;
@@ -131,6 +92,7 @@ export default (state = initState, action) => {
       state = {
         ...state,
         loading: false,
+        article: action.payload.dataResponse,
         message: action.payload.message,
       };
       break;

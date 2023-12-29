@@ -2,29 +2,32 @@ import axios from "../helpers/axios";
 import { articleConstants } from "../constants/article.constants";
 import { toast } from "react-toastify";
 
-export const getListArticleByPage = (limit=10,page=0,categoryArticleId=0) => {
+export const getListArticleByPage = (formData) => {
   return async (dispatch) => {
     dispatch({ type: articleConstants.GET_ARTICLE_BY_PAGE_REQUEST });
-    const res = await axios.get(`/api/articles?limit=${limit}&page=${page}&categoryArticleId=${categoryArticleId}`);
+    console.log("formData", formData)
+    const res = await axios.post(`/api/articles/list`,formData);
 
     if (res.status === 200) {
-      const { dataResponse, message,count } = res.data;
+      const { result, message } = res.data;
       dispatch({
         type: articleConstants.GET_ARTICLE_BY_PAGE_SUCCESS,
         payload: {
-          dataResponse: dataResponse,
+          dataResponse: result.content,
           message: message,
-          count: count
+          pageNumber: result.pageNumber,
+          pageSize :result.pageSize,
+          totalElements: result.totalElements,
+          totalPages: result.totalPages,
         },
       });
 
       // toast("get list article by page success");
     } else {
-      const { dataResponse, message } = res.data;
+      const { message } = res.data;
       dispatch({
         type: articleConstants.GET_ARTICLE_BY_PAGE_FAILURE,
         payload: {
-          dataResponse: dataResponse,
           message: message,
         },
       });
@@ -39,22 +42,21 @@ export const getArticleById = (id) => {
     const res = await axios.get(`/api/articles/${id}`);
 
     if (res.status === 200) {
-      const { dataResponse, message } = res.data;
+      const { result, message } = res.data;
       dispatch({
         type: articleConstants.GET_ARTICLE_BY_ID_SUCCESS,
         payload: {
-          dataResponse: dataResponse,
+          dataResponse: result,
           message: message,
         },
       });
 
       // toast("get article by id success");
     } else {
-      const { dataResponse, message } = res.data;
+      const { message } = res.data;
       dispatch({
         type: articleConstants.GET_ARTICLE_BY_ID_FAILURE,
         payload: {
-          dataResponse: dataResponse,
           message: message,
         },
       });
@@ -62,100 +64,6 @@ export const getArticleById = (id) => {
     }
   };
 };
-
-export const searchListArticleByName = (name,categoryArticleId,limit,page) => {
-  return async (dispatch) => {
-    dispatch({ type: articleConstants.SEARCH_ARTICLE_BY_NAME_REQUEST });
-    // const res = await axios.get(`/api/articles/search?q=${key}&limit=${limit}&page=${page}`);
-    const res = await axios.get(`/api/articles/filter?name=${name}&categoryArticleId=${categoryArticleId}&limit=${limit}&page=${page}`);
-
-    if (res.status === 200) {
-      const { dataResponse, message ,count } = res.data;
-      dispatch({
-        type: articleConstants.SEARCH_ARTICLE_BY_NAME_SUCCESS,
-        payload: {
-          dataResponse: dataResponse,
-          message: message,
-          count: count
-        },
-      });
-
-      // toast("search list article by name success");
-    } else {
-      const { dataResponse, message } = res.data;
-      dispatch({
-        type: articleConstants.SEARCH_ARTICLE_BY_NAME_FAILURE,
-        payload: {
-          dataResponse: dataResponse,
-          message: message,
-        },
-      });
-      // toast("search list article by name error");
-    }
-  };
-};
-
-
-// export const filterArticleByBrand = (brandId,limit,page) => {
-//   return async (dispatch) => {
-//     dispatch({ type: articleConstants.FILTER_ARTICLE_BY_BRAND_REQUEST });
-//     const res = await axios.get(`/api/articles/brand/${brandId}?limit=${limit}&page=${page}`);
-
-//     if (res.status === 200) {
-//       const { dataResponse, message } = res.data;
-//       dispatch({
-//         type: articleConstants.FILTER_ARTICLE_BY_BRAND_SUCCESS,
-//         payload: {
-//           dataResponse: dataResponse,
-//           message: message,
-//         },
-//       });
-
-//       toast("filter article by brand success");
-//     } else {
-//       const { dataResponse, message } = res.data;
-//       dispatch({
-//         type: articleConstants.FILTER_ARTICLE_BY_CATEGORY_FAILURE,
-//         payload: {
-//           dataResponse: dataResponse,
-//           message: message,
-//         },
-//       });
-//       toast("filter article by brand error");
-//     }
-//   };
-// };
-
-
-// export const filterArticleByCategory = (cateId,limit,page) => {
-//   return async (dispatch) => {
-//     dispatch({ type: articleConstants.FILTER_ARTICLE_BY_CATEGORY_REQUEST });
-//     const res = await axios.get(`/api/articles/category/${cateId}?limit=${limit}&page=${page}`);
-
-//     if (res.status === 200) {
-//       const { dataResponse, message } = res.data;
-//       dispatch({
-//         type: articleConstants.FILTER_ARTICLE_BY_CATEGORY_SUCCESS,
-//         payload: {
-//           dataResponse: dataResponse,
-//           message: message,
-//         },
-//       });
-
-//       toast("filter article by category success");
-//     } else {
-//       const { dataResponse, message } = res.data;
-//       dispatch({
-//         type: articleConstants.FILTER_ARTICLE_BY_CATEGORY_FAILURE,
-//         payload: {
-//           dataResponse: dataResponse,
-//           message: message,
-//         },
-//       });
-//       toast("filter article by category error");
-//     }
-//   };
-// };
 
 
 export const createArticle = (form) => {
@@ -166,23 +74,22 @@ export const createArticle = (form) => {
     const res = await axios.post(`/api/articles`, form);
 
     if (res.status === 201) {
-      const { dataResponse, message } = res.data;
+      const { result, message } = res.data;
 
       dispatch({
         type: articleConstants.ADD_ARTICLE_SUCCESS,
         payload: {
-          dataResponse: dataResponse,
+          dataResponse: result,
           message: message,
         },
       });
       toast.success("tạo bài viết thành công");
       // dispatch(getListArticle());
     } else {
-      const { dataResponse, message } = res.data;
+      const {  message } = res.data;
       dispatch({
         type: articleConstants.ADD_ARTICLE_FAILURE,
         payload: {
-          dataResponse: dataResponse,
           message: message,
         },
       });
@@ -196,12 +103,11 @@ export const deleteArticle = (form) => {
     dispatch({ type: articleConstants.DELETE_ARTICLE_REQUEST });
     const res = await axios.delete(`/api/articles/${form.id}`);
     if (res.status === 200) {
-      const { dataResponse, message } = res.data;
+      const { message } = res.data;
 
       dispatch({
         type: articleConstants.DELETE_ARTICLE_SUCCESS,
         payload: {
-          dataResponse: dataResponse,
           message: message,
         },
       });
@@ -209,12 +115,11 @@ export const deleteArticle = (form) => {
 
       // dispatch(getListArticleByPage());
     } else {
-      const { dataResponse, message } = res.data;
+      const {  message } = res.data;
 
       dispatch({
         type: articleConstants.DELETE_ARTICLE_FAILURE,
         payload: {
-          dataResponse: dataResponse,
           message: message,
         },
       });
@@ -230,12 +135,12 @@ export const updateArticle = (id,form) => {
     const res = await axios.put(`/api/articles/${id}`, form);
 
     if (res.status === 200) {
-      const { dataResponse, message } = res.data;
+      const { result, message } = res.data;
 
       dispatch({
         type: articleConstants.UPDATE_ARTICLE_SUCCESS,
         payload: {
-          dataResponse: dataResponse,
+          dataResponse: result,
           message: message,
         },
       });
@@ -243,12 +148,11 @@ export const updateArticle = (id,form) => {
 
       // dispatch(getListArticle());
     } else {
-      const { dataResponse, message } = res.data;
+      const {  message } = res.data;
 
       dispatch({
         type: articleConstants.UPDATE_ARTICLE_FAILURE,
         payload: {
-          dataResponse: dataResponse,
           message: message,
         },
       });

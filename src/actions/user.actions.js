@@ -2,28 +2,32 @@ import axios from "../helpers/axios";
 import { userConstants } from "../constants/user.constants";
 import { toast } from "react-toastify";
 
-export const getListUserByPage = (limit=10,page=0) => {
+export const getListUserByPage = (formData) => {
   return async (dispatch) => {
     dispatch({ type: userConstants.GET_USER_BY_PAGE_REQUEST });
-    const res = await axios.get(`/api/users?limit=${limit}&page=${page}&sortBy=createdAt`);
+    console.log("formData", formData)
+    const res = await axios.post(`/api/users/list`,formData);
 
     if (res.status === 200) {
-      const { dataResponse, message } = res.data;
+      const { result, message } = res.data;
       dispatch({
         type: userConstants.GET_USER_BY_PAGE_SUCCESS,
         payload: {
-          dataResponse: dataResponse,
+          dataResponse: result.content,
           message: message,
+          pageNumber: result.pageNumber,
+          pageSize :result.pageSize,
+          totalElements: result.totalElements,
+          totalPages: result.totalPages,
         },
       });
 
       // toast("get list user by page success");
     } else {
-      const { dataResponse, message } = res.data;
+      const { message } = res.data;
       dispatch({
         type: userConstants.GET_USER_BY_PAGE_FAILURE,
         payload: {
-          dataResponse: dataResponse,
           message: message,
         },
       });
@@ -38,22 +42,21 @@ export const getUserById = (id) => {
     const res = await axios.get(`/api/users/${id}`);
 
     if (res.status === 200) {
-      const { dataResponse, message } = res.data;
+      const { result, message } = res.data;
       dispatch({
         type: userConstants.GET_USER_BY_ID_SUCCESS,
         payload: {
-          dataResponse: dataResponse,
+          dataResponse: result,
           message: message,
         },
       });
 
       // toast("get user by id success");
     } else {
-      const { dataResponse, message } = res.data;
+      const { message } = res.data;
       dispatch({
         type: userConstants.GET_USER_BY_ID_FAILURE,
         payload: {
-          dataResponse: dataResponse,
           message: message,
         },
       });
@@ -61,37 +64,6 @@ export const getUserById = (id) => {
     }
   };
 };
-
-export const searchListUserByName = (key,limit,page) => {
-  return async (dispatch) => {
-    dispatch({ type: userConstants.SEARCH_USER_BY_NAME_REQUEST });
-    const res = await axios.get(`/api/users/search?key=${key}&limit=${limit}&page=${page}`);
-
-    if (res.status === 200) {
-      const { dataResponse, message } = res.data;
-      dispatch({
-        type: userConstants.SEARCH_USER_BY_NAME_SUCCESS,
-        payload: {
-          dataResponse: dataResponse,
-          message: message,
-        },
-      });
-
-      // toast("search list user by name success");
-    } else {
-      const { dataResponse, message } = res.data;
-      dispatch({
-        type: userConstants.SEARCH_USER_BY_NAME_FAILURE,
-        payload: {
-          dataResponse: dataResponse,
-          message: message,
-        },
-      });
-      // toast("search list user by name error");
-    }
-  };
-};
-
 
 
 export const createUser = (form) => {
@@ -102,28 +74,27 @@ export const createUser = (form) => {
     const res = await axios.post(`/api/users`, form);
 
     if (res.status === 201) {
-      const { dataResponse, message } = res.data;
+      const { result, message } = res.data;
 
       dispatch({
         type: userConstants.ADD_USER_SUCCESS,
         payload: {
-          dataResponse: dataResponse,
+          dataResponse: result,
           message: message,
         },
       });
-      toast.success("tạo người dùng thành công");
+      toast.success("tạo khách hàng thành công");
       // dispatch(getListUser());
     } else {
-      const { dataResponse, message } = res.data;
+      const {  message } = res.data;
       dispatch({
         type: userConstants.ADD_USER_FAILURE,
         payload: {
-          dataResponse: dataResponse,
           message: message,
         },
       });
 
-      toast.error("tạo người dùng thất bại");
+      toast.error("tạo khách hàng thất bại");
     }
   };
 };
@@ -132,29 +103,27 @@ export const deleteUser = (form) => {
     dispatch({ type: userConstants.DELETE_USER_REQUEST });
     const res = await axios.delete(`/api/users/${form.id}`);
     if (res.status === 200) {
-      const { dataResponse, message } = res.data;
+      const { message } = res.data;
 
       dispatch({
         type: userConstants.DELETE_USER_SUCCESS,
         payload: {
-          dataResponse: dataResponse,
           message: message,
         },
       });
-      toast.success("xóa người dùng thành công");
+      toast.success("xóa khách hàng thành công");
 
       // dispatch(getListUserByPage());
     } else {
-      const { dataResponse, message } = res.data;
+      const {  message } = res.data;
 
       dispatch({
         type: userConstants.DELETE_USER_FAILURE,
         payload: {
-          dataResponse: dataResponse,
           message: message,
         },
       });
-      toast.error("xóa người dùng thất bại");
+      toast.error("xóa khách hàng thất bại");
     }
   };
 };
@@ -166,29 +135,28 @@ export const updateUser = (id,form) => {
     const res = await axios.put(`/api/users/${id}`, form);
 
     if (res.status === 200) {
-      const { dataResponse, message } = res.data;
+      const { result, message } = res.data;
 
       dispatch({
         type: userConstants.UPDATE_USER_SUCCESS,
         payload: {
-          dataResponse: dataResponse,
+          dataResponse: result,
           message: message,
         },
       });
-      toast.success("cập nhật người dùng thành công");
+      toast.success("cập nhật khách hàng thành công");
 
       // dispatch(getListUser());
     } else {
-      const { dataResponse, message } = res.data;
+      const {  message } = res.data;
 
       dispatch({
         type: userConstants.UPDATE_USER_FAILURE,
         payload: {
-          dataResponse: dataResponse,
           message: message,
         },
       });
-      toast.error("cập nhật người dùng thất bại");
+      toast.error("cập nhật khách hàng thất bại");
     }
   };
 };

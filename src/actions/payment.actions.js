@@ -32,6 +32,8 @@ export const getListPayment = () => {
   };
 };
 
+
+
 export const createPayment = (form) => {
   return async (dispatch) => {
     dispatch({
@@ -50,7 +52,7 @@ export const createPayment = (form) => {
         },
       });
       toast.success("tạo phương thức thanh toán thành công");
-      // dispatch(getListPayment());
+      dispatch(getListPayment());
     } else {
       const { dataResponse, message } = res.data;
       dispatch({
@@ -115,7 +117,7 @@ export const updatePayment = (form) => {
       });
       toast.success("cập nhật phương thức thanh toán thành công");
 
-      // dispatch(getListPayment());
+      dispatch(getListPayment());
     } else {
       const { dataResponse, message } = res.data;
 
